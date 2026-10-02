@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, Ref, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type { InputHTMLAttributes, Ref, TextareaHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -25,12 +25,4 @@ export function Textarea({
       {...rest}
     />
   );
-}
-
-export function Select({
-  className,
-  ref,
-  ...rest
-}: SelectHTMLAttributes<HTMLSelectElement> & { ref?: Ref<HTMLSelectElement> }) {
-  return <select ref={ref} className={cn(FIELD, "h-9 pr-8", className)} {...rest} />;
 }

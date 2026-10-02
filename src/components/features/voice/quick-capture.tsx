@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Modal } from "@/components/ui/modal";
 import { PriorityMark } from "@/components/ui/priority-mark";
-import { Select } from "@/components/ui/input";
+import { Listbox } from "@/components/ui/listbox";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useCreateNote, useCreateTask } from "@/lib/api/mutations";
 import { useBoards } from "@/lib/api/queries";
@@ -163,20 +163,17 @@ export function QuickCapture() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 pt-5 rule-t">
           {parsed.kind === "task" && boards.data && boards.data.length > 1 ? (
-            <label className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <span className="label">board</span>
-              <Select
-                value={targetBoard}
-                onChange={(e) => setBoardId(e.target.value)}
-                className="h-8 w-auto"
-              >
-                {boards.data.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </Select>
-            </label>
+              <Listbox
+                label="Board"
+                size="sm"
+                value={targetBoard ?? ""}
+                onChange={setBoardId}
+                options={boards.data.map((b) => ({ value: b.id, label: b.name }))}
+                className="w-44"
+              />
+            </div>
           ) : (
             <p className="text-xs text-subtle">
               start with <span className="text-muted">“note”</span> to save a note instead

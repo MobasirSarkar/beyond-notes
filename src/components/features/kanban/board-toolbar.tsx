@@ -1,20 +1,10 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { PriorityMark } from "@/components/ui/priority-mark";
-import { Segmented } from "@/components/ui/segmented";
+import { StepSlider } from "@/components/ui/step-slider";
 import { TagToggle } from "@/components/ui/tag";
-import { PRIORITIES } from "@/lib/schemas/input";
-import type { BoardFilters, PriorityFilter } from "@/types/kanban";
-import type { SegmentOption } from "@/types/ui";
-
-const PRIORITY_OPTIONS: readonly SegmentOption<PriorityFilter>[] = [
-  { value: "all", label: "all" },
-  ...PRIORITIES.map((p) => ({
-    value: p,
-    label: <PriorityMark priority={p} />,
-  })),
-];
+import { PRIORITY_STEPS_AT_LEAST } from "@/lib/constants/priority";
+import type { BoardFilters } from "@/types/kanban";
 
 type Props = {
   filters: BoardFilters;
@@ -24,9 +14,13 @@ type Props = {
 
 export function BoardToolbar({ filters, labels, onChange }: Props) {
   const active =
-    filters.query.trim() !== "" || filters.priority !== "all" || filters.label !== null;
+    filters.query.trim() !== "" || filters.minPriority !== "none" || filters.label !== null;
   return (
-    <div role="search" aria-label="Filter tasks" className="flex flex-wrap items-center gap-3">
+    <div
+      role="search"
+      aria-label="Filter tasks"
+      className="flex flex-wrap items-center gap-x-5 gap-y-3"
+    >
       <Input
         type="search"
         value={filters.query}
@@ -36,12 +30,13 @@ export function BoardToolbar({ filters, labels, onChange }: Props) {
         aria-label="Filter by text"
         className="w-full sm:w-56"
       />
-      <Segmented
-        label="Filter by priority"
-        size="sm"
-        value={filters.priority}
-        options={PRIORITY_OPTIONS}
-        onChange={(priority) => onChange({ priority })}
+      <StepSlider
+        layout="inline"
+        label="priority"
+        value={filters.minPriority}
+        steps={PRIORITY_STEPS_AT_LEAST}
+        onChange={(minPriority) => onChange({ minPriority })}
+        className="w-full sm:w-80"
       />
       {labels.length > 0 ? (
         <div className="flex flex-wrap gap-1" aria-label="Filter by label">
@@ -60,7 +55,7 @@ export function BoardToolbar({ filters, labels, onChange }: Props) {
         <button
           type="button"
           className="text-xs text-muted underline decoration-dotted underline-offset-4 hover:text-fg"
-          onClick={() => onChange({ query: "", priority: "all", label: null })}
+          onClick={() => onChange({ query: "", minPriority: "none", label: null })}
         >
           clear filters
         </button>

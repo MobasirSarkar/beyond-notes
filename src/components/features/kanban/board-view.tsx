@@ -13,6 +13,7 @@ import { useLatch } from "@/hooks/use-latch";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useCreateColumn, useDeleteBoard, useRenameBoard } from "@/lib/api/mutations";
 import { useBoard } from "@/lib/api/queries";
+import { PRIORITY_META } from "@/lib/constants/priority";
 import { comparePosition } from "@/lib/utils/position";
 import { formText } from "@/lib/utils/form";
 import type { BoardDto, TaskDto } from "@/types/dto";
@@ -26,12 +27,12 @@ import { useBoardDnd } from "./use-board-dnd";
 
 const TaskSheet = dynamic(() => import("./task-sheet").then((m) => m.TaskSheet), { ssr: false });
 
-const NO_FILTERS: BoardFilters = { query: "", priority: "all", label: null };
+const NO_FILTERS: BoardFilters = { query: "", minPriority: "none", label: null };
 
 function matches(t: TaskDto, f: BoardFilters, q: string): boolean {
   return (
     (!q || t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)) &&
-    (f.priority === "all" || t.priority === f.priority) &&
+    PRIORITY_META[t.priority].rank >= PRIORITY_META[f.minPriority].rank &&
     (f.label === null || t.labels.includes(f.label))
   );
 }
@@ -151,7 +152,8 @@ export function BoardView({ initial }: { initial: BoardDto }) {
           },
         }}
       >
-        <div className="-mx-(--gutter) flex snap-x snap-mandatory scroll-px-(--gutter) items-start gap-3 overflow-x-auto px-(--gutter) pb-4 sm:snap-none">
+        {/* Extra bottom padding (offset by the negative margin) keeps column shadows from being clipped by the scroller. */}
+        <div className="-mx-(--gutter) -mb-8 flex snap-x snap-mandatory scroll-px-(--gutter) items-start gap-3 overflow-x-auto px-(--gutter) pt-2 pb-12 sm:snap-none">
           {board.columns.map((col, i) => (
             <KanbanColumn
               key={col.id}
