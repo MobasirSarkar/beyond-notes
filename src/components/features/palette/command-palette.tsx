@@ -32,6 +32,7 @@ export function CommandPalette() {
   const open = useUi((s) => s.paletteOpen);
   const router = useRouter();
   const theme = usePrefs((p) => p.theme);
+  const ambient = usePrefs((p) => p.ambient);
   const [query, setQuery] = useState("");
   const deferred = useDeferredValue(query);
   const search = useSearch(deferred);
@@ -165,6 +166,12 @@ export function CommandPalette() {
                 ◐
               </span>{" "}
               cycle theme <Hint>{theme}</Hint>
+            </Command.Item>
+            <Command.Item className={ITEM} onSelect={() => setPrefs({ ambient: !ambient })}>
+              <span aria-hidden className="w-4">
+                ░
+              </span>{" "}
+              ambient background <Hint>{ambient ? "on" : "off"}</Hint>
             </Command.Item>
             <Command.Item className={ITEM} onSelect={ui.openHelp}>
               <span aria-hidden className="w-4">

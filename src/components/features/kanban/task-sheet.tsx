@@ -106,7 +106,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
         maxLength={LIMITS.taskTitle}
         rows={2}
         aria-label="Title"
-        className="w-full resize-none bg-transparent text-xl leading-snug font-bold tracking-tight outline-none"
+        className="w-full resize-none bg-transparent heading text-xl leading-snug outline-none"
       />
 
       <section className="flex flex-col gap-5">

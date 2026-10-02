@@ -9,7 +9,6 @@ import { buttonStyles } from "@/components/ui/button";
 import { ScrambleText } from "@/components/ui/scramble-text";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-import { AsciiField } from "./ascii-field";
 import { AsciiLogo } from "./ascii-logo";
 
 const BOOT = [
@@ -43,10 +42,7 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
   }, [reduced]);
 
   return (
-    <section className="relative isolate overflow-hidden">
-      <AsciiField className="absolute inset-0 -z-10 size-full opacity-60" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,var(--bg)_25%,transparent_75%)]" />
-
+    <section>
       <div className="page flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center gap-10 py-16">
         <AsciiLogo className="text-[clamp(0.3125rem,1.55vw,0.875rem)]" />
 
@@ -54,7 +50,7 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
           <ScrambleText
             as="h1"
             text="tasks, notes and focus — in plain text."
-            className="text-2xl leading-tight font-bold tracking-tight sm:text-display"
+            className="heading text-2xl leading-tight sm:text-display"
             duration={1}
           />
           <p className="max-w-xl text-md leading-relaxed text-muted">

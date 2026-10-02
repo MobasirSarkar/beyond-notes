@@ -8,14 +8,14 @@ export function EmptyState({ title, children, action, className }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-3 rule-dashed px-6 py-12 text-center hairline",
+        "flex flex-col items-center gap-3 rule-dashed bg-bg px-6 py-12 text-center hairline",
         className,
       )}
     >
       <pre aria-hidden className="text-xs leading-tight text-subtle">
         {"┌─────┐\n│  ·  │\n└─────┘"}
       </pre>
-      <p className="text-sm font-medium">{title}</p>
+      <p className="heading text-md">{title}</p>
       {children ? <p className="max-w-sm text-sm text-muted">{children}</p> : null}
       {action}
     </div>

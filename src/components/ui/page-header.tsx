@@ -21,7 +21,7 @@ export function PageHeader({ path, title, description, actions, className, child
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-col gap-2">
           <p className="label">{path}</p>
-          <h1 className="truncate text-display font-bold tracking-tight">
+          <h1 className="truncate heading text-display">
             <ScrambleText text={title} />
           </h1>
           {description ? <p className="text-sm text-muted">{description}</p> : null}

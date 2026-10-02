@@ -117,10 +117,10 @@ export function NotesList() {
             : "Notes support Markdown, tags and dictation."}
         </EmptyState>
       ) : (
-        <ul className="hairline [&>li+li]:rule-t">
+        <ul className="bg-bg hairline [&>li+li]:rule-t">
           <li
             aria-hidden
-            className="hidden grid-cols-[2ch_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 bg-surface px-4 py-2 label md:grid"
+            className="hidden grid-cols-[2ch_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 bg-surface px-4 py-2 subheading md:grid"
           >
             <span />
             <span>name</span>

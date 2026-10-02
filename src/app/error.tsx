@@ -17,7 +17,7 @@ export default function ErrorBoundary({
   return (
     <main id="main" className="page flex min-h-[70dvh] flex-col items-start justify-center gap-6">
       <p className="label">exit code 1</p>
-      <h1 className="text-display font-bold tracking-tight">something broke.</h1>
+      <h1 className="heading text-display">something broke.</h1>
       <p className="text-sm text-muted">
         An unexpected error occurred.{" "}
         {error.digest ? <span className="text-subtle">ref {error.digest}</span> : null}

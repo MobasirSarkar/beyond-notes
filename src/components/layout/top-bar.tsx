@@ -22,7 +22,7 @@ export function TopBar() {
           className="flex min-w-0 items-baseline gap-1 text-sm"
           aria-label="Beyond Notes home"
         >
-          <span className="font-bold">beyond</span>
+          <span className="heading text-md">beyond</span>
           <span className="truncate text-subtle">:~/{current?.label ?? ""}</span>
         </Link>
 

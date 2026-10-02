@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { FeatureList } from "@/components/features/landing/feature-list";
 import { Hero } from "@/components/features/landing/hero";
+import { AsciiBackdrop } from "@/components/ui/ascii-backdrop";
 import { buttonStyles } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Rule } from "@/components/ui/rule";
@@ -20,9 +21,10 @@ export default async function LandingPage() {
   const session = await getSession();
   return (
     <>
-      <header className="rule-b">
+      <AsciiBackdrop focus="center" fps={20} />
+      <header className="bg-bg/80 backdrop-blur-sm rule-b">
         <div className="page flex h-(--header-h) items-center justify-between">
-          <span className="text-sm font-bold">beyond</span>
+          <span className="heading text-md">beyond</span>
           <Link
             href={session ? "/boards" : "/sign-in"}
             className={buttonStyles({ size: "sm", variant: "ghost" })}

@@ -100,6 +100,11 @@ never at production.
   Tailwind's px-based border utilities are replaced by `hairline`, `rule-{t,b,l,r}`, `edge-{l,b}`.
 - **Emphasis without color.** Priority is glyph density (`! !! !!! !!!!`), urgency a heavy edge, overdue
   an inverted chip, heatmap levels `· ░ ▒ ▓ █`.
+- **Typography.** Headings and sub-headings use **Geist Pixel** (Vercel, `geist/font/pixel`, Square
+  style) via the `heading` / `subheading` utilities; body text is JetBrains Mono.
+- **Ambient background.** The landing page's animated ASCII field (`AsciiBackdrop`) sits behind the
+  landing, auth and app screens. It blits pre-rendered glyphs from an atlas, re-tints on theme change,
+  pauses when hidden, is static under reduced motion, and can be turned off in settings or the palette.
 - **Navigation.** A slim top bar (path, search/command, capture) and a tmux-style status line: numbered
   windows (press `1`–`6`), the running focus timer, sync state and a clock. Boards are tabs on the board page.
 - **Hierarchy.** Every page uses `PageHeader` (path → title → description → actions) inside the shared

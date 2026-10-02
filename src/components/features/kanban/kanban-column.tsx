@@ -87,7 +87,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
       )}
     >
       <header className="flex h-11 items-center gap-2 pr-1 pl-3 rule-b">
-        <h2 className="min-w-0 flex-1 truncate label text-fg">
+        <h2 className="min-w-0 flex-1 truncate subheading">
           {column.isDone ? <span className="text-subtle">✓ </span> : null}
           {column.name}
         </h2>

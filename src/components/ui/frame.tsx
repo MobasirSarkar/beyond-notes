@@ -29,7 +29,7 @@ export function Frame({
     <Tag className={cn("bg-bg hairline", className)}>
       {title || actions || meta ? (
         <header className="flex min-h-10 items-center gap-3 px-4 py-2 rule-b">
-          {title ? <h2 className="label text-fg">{title}</h2> : null}
+          {title ? <h2 className="subheading">{title}</h2> : null}
           {meta ? <span className="text-xs text-subtle">{meta}</span> : null}
           {actions ? <div className="ml-auto flex items-center gap-1">{actions}</div> : null}
         </header>

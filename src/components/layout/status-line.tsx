@@ -61,7 +61,7 @@ export function StatusLine({ userName }: { userName: string }) {
       className="fixed inset-x-0 bottom-0 z-(--z-chrome) h-(--status-h) bg-surface pb-[env(safe-area-inset-bottom)] text-xs rule-t"
     >
       <div className="flex h-(--status-h) items-stretch">
-        <Link href="/" className="hidden items-center bg-fg px-3 font-bold text-bg sm:flex">
+        <Link href="/" className="hidden items-center bg-fg px-3 heading text-bg sm:flex">
           [beyond]
         </Link>
 

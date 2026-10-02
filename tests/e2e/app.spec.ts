@@ -205,6 +205,10 @@ test.describe("signed-in flows", () => {
     expect(data.format).toBe("beyond-notes/v1");
     expect(data.notes.length).toBeGreaterThanOrEqual(2);
     await page.goto("/settings");
+    // The shared ASCII backdrop renders behind the app and can be switched off.
+    await expect(page.locator("canvas[aria-hidden]")).toHaveCount(1);
+    await page.getByRole("checkbox", { name: "on" }).first().click();
+    await expect(page.locator("canvas[aria-hidden]")).toHaveCount(0);
     await shot(page, "10-settings");
     await page.getByRole("button", { name: "sign out" }).click();
     await expect(page).toHaveURL(/\/$/);

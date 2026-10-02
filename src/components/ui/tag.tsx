@@ -18,7 +18,7 @@ export function TagToggle({
       type="button"
       aria-pressed={active}
       className={cn(
-        "h-7 px-2 text-xs transition-colors duration-(--dur-1) hairline",
+        "h-7 bg-bg px-2 text-xs transition-colors duration-(--dur-1) hairline",
         active ? "rule-strong bg-fg text-bg" : "text-muted hover:rule-strong hover:text-fg",
         className,
       )}

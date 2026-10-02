@@ -35,6 +35,7 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
   const theme = usePrefs((p) => p.theme);
   const motion = usePrefs((p) => p.motion);
   const sound = usePrefs((p) => p.sound);
+  const ambient = usePrefs((p) => p.ambient);
   const { signOut, pending } = useSignOut();
 
   return (
@@ -68,6 +69,14 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
                 options={MOTION}
                 onChange={(m) => setPrefs({ motion: m })}
               />
+            </SettingRow>
+            <SettingRow
+              title="Ambient background"
+              description="The animated ASCII field behind the app. Static when motion is reduced."
+            >
+              <Checkbox checked={ambient} onChange={(a) => setPrefs({ ambient: a })}>
+                {ambient ? "on" : "off"}
+              </Checkbox>
             </SettingRow>
             <SettingRow
               title="Sound"

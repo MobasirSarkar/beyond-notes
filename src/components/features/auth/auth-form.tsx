@@ -70,9 +70,7 @@ export function AuthForm({ mode, next, github }: Props) {
     <div className="flex flex-col rule-strong bg-bg hairline">
       <header className="flex flex-col gap-1 px-6 py-5 rule-b sm:px-8">
         <p className="label">{isSignUp ? "new session" : "resume session"}</p>
-        <h1 className="text-xl font-bold tracking-tight">
-          {isSignUp ? "Create your account" : "Welcome back"}
-        </h1>
+        <h1 className="heading text-xl">{isSignUp ? "Create your account" : "Welcome back"}</h1>
       </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-5 px-6 py-6 sm:px-8" noValidate>
         {isSignUp ? (

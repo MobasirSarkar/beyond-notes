@@ -32,7 +32,7 @@ export function FeatureList() {
       {FEATURES.map((f, i) => (
         <li key={f.title} className="flex flex-col gap-3 bg-bg p-6">
           <span className="text-xs text-subtle tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-          <h3 className="text-md font-bold">{f.title}</h3>
+          <h3 className="heading text-lg">{f.title}</h3>
           <p className="text-sm leading-relaxed text-muted">{f.body}</p>
         </li>
       ))}

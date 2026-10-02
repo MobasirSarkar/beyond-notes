@@ -126,7 +126,7 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
         placeholder="untitled"
         maxLength={LIMITS.noteTitle}
         aria-label="Note title"
-        className="w-full bg-transparent text-display font-bold tracking-tight outline-none placeholder:text-subtle"
+        className="w-full bg-transparent heading text-display outline-none placeholder:text-subtle"
       />
 
       <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_18rem]">

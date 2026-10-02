@@ -97,7 +97,7 @@ export function Modal({
             <div
               className={cn("flex h-11 shrink-0 items-center gap-3 px-4 rule-b", bare && "sr-only")}
             >
-              <h2 id={titleId} className="truncate label text-fg">
+              <h2 id={titleId} className="truncate subheading">
                 {title}
               </h2>
               <button

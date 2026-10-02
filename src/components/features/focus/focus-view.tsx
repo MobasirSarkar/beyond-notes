@@ -95,7 +95,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
 
         <section
           aria-label="Timer"
-          className="flex flex-col items-center gap-8 px-4 py-12 hairline sm:py-16"
+          className="flex flex-col items-center gap-8 bg-bg px-4 py-12 hairline sm:py-16"
         >
           <BigClock
             value={clock}

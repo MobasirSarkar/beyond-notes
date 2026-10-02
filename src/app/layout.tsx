@@ -1,6 +1,7 @@
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./globals.css";
 
+import { GeistPixelSquare } from "geist/font/pixel";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
@@ -36,7 +37,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Per-request CSP nonce generated in `src/proxy.ts`.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={GeistPixelSquare.variable} suppressHydrationWarning>
       <head>
         {/* Static constant (no user input): applies theme before first paint. */}
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: PREFS_BOOTSTRAP }} />

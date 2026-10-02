@@ -36,7 +36,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn("inline-flex max-w-full overflow-x-auto hairline", className)}
+      className={cn("inline-flex max-w-full overflow-x-auto bg-bg hairline", className)}
     >
       {options.map((o) => {
         const selected = o.value === value;

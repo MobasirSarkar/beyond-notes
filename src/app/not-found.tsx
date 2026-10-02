@@ -8,7 +8,7 @@ export default function NotFound() {
       <pre aria-hidden className="text-xs leading-tight text-subtle">
         {"┌──────────────┐\n│ 404 · ENOENT │\n└──────────────┘"}
       </pre>
-      <h1 className="text-display font-bold tracking-tight">nothing here.</h1>
+      <h1 className="heading text-display">nothing here.</h1>
       <p className="text-sm text-muted">The page you asked for doesn&apos;t exist or was moved.</p>
       <Link href="/boards" className={buttonStyles({ variant: "solid" })}>
         ← back to boards
