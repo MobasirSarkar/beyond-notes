@@ -68,6 +68,56 @@ Env vars are validated at boot (`src/env.ts`); the app refuses to start with a m
 and prunes expired subscriptions. `vercel.json` schedules it every minute (per-minute crons need a paid
 Vercel plan; any external scheduler hitting the URL works too).
 
+## Docker
+
+A multi-stage `Dockerfile` builds a small, hardened production image from Next.js's
+[standalone output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output), plus a
+separate one-shot image that applies database migrations.
+
+```bash
+cp .env.example .env               # set BETTER_AUTH_SECRET (openssl rand -base64 48)
+docker compose up --build          # Postgres → migrations → app on http://localhost:3000
+```
+
+| Image / target                      | What it is                                                                             |
+| ----------------------------------- | -------------------------------------------------------------------------------------- |
+| `runner` (default) — `beyond-notes` | `node server.js` from the standalone bundle (~97 MB compressed)                        |
+| `migrator` — `beyond-notes-migrate` | Applies `./drizzle` migrations, then exits; a single bundled script, no `node_modules` |
+
+**How it's built**
+
+- **Stages:** `deps` (pnpm install from the lockfile only, cached) → `builder` (`next build`) →
+  `runner`; `deps` → `migrate-build` (esbuild bundle) → `migrator`. One Debian (glibc) base for every
+  stage, so native modules always match the libc they run on. Override it with
+  `--build-arg NODE_IMAGE=…` for an internal mirror or a base with a corporate CA.
+- **Reproducible:** pnpm comes from `packageManager` via Corepack; `--frozen-lockfile`; BuildKit cache
+  mounts for the pnpm store.
+- **No secrets in the image:** env files never enter the build context (`.dockerignore`), secrets are
+  runtime-only, and env validation is skipped only for the build. The build's auth initialisation gets a
+  throwaway random secret inline on that one `RUN`, so it isn't kept in any layer or the image config.
+  Only `NEXT_PUBLIC_VAPID_PUBLIC_KEY` is a build argument, because it is inlined into the client bundle.
+- **Least privilege at runtime:** runs as the unprivileged `node` user; app files are root-owned and
+  read-only, and only `.next/cache` is writable. Compose adds a read-only root filesystem, tmpfs mounts,
+  `cap_drop: [ALL]`, `no-new-privileges` and an init process for clean signal handling.
+- **Health:** `GET /api/health` (liveness, used by the image `HEALTHCHECK`) and
+  `GET /api/health?ready=1` (readiness: also pings the database, `503` when it can't).
+
+**With a managed database (e.g. Neon)** — run the two images directly:
+
+```bash
+docker build -t beyond-notes .
+docker build -t beyond-notes-migrate --target migrator .
+docker run --rm -e DATABASE_URL="$NEON_URL" beyond-notes-migrate
+docker run -d --init --read-only --tmpfs /tmp --tmpfs /app/.next/cache:uid=1000,gid=1000 \
+  --cap-drop ALL --security-opt no-new-privileges -p 3000:3000 \
+  -e DATABASE_URL="$NEON_URL" -e BETTER_AUTH_SECRET="$SECRET" \
+  -e BETTER_AUTH_URL=https://notes.example.com beyond-notes
+```
+
+In Compose, set `DOCKER_DATABASE_URL` in `.env` instead (it is kept separate from `DATABASE_URL`,
+so a host-side `.env` pointing at `localhost` never leaks into containers). CI builds both images and
+smoke-tests the container's health endpoint on every push.
+
 ## Scripts
 
 | Script                            | Purpose                                                                  |

@@ -20,7 +20,7 @@ export function CosmosBackdrop({ variant = "ambient", className }: Props) {
     <div aria-hidden className={cn("pointer-events-none fixed inset-0 -z-10", className)}>
       <Cosmos variant={variant} />
       {variant === "ambient" ? (
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--bg)_0%,color-mix(in_oklch,var(--bg)_80%,transparent)_40%,color-mix(in_oklch,var(--bg)_35%,transparent)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_oklch,var(--bg)_55%,transparent)_0%,color-mix(in_oklch,var(--bg)_25%,transparent)_45%,color-mix(in_oklch,var(--bg)_15%,transparent)_100%)]" />
       ) : (
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_45%,color-mix(in_oklch,var(--bg)_85%,transparent)_0%,transparent_55%)]" />
       )}

@@ -1,0 +1,83 @@
+# Local production-like stack: Postgres → one-shot migrations → app.
+#
+#   cp .env.example .env    # then set BETTER_AUTH_SECRET (and optional keys)
+#   docker compose up --build
+#
+# For a managed database (e.g. Neon), set DOCKER_DATABASE_URL in .env and start
+# without the bundled Postgres:
+#   docker compose up --build --no-deps migrate && docker compose up --no-deps app
+
+name: beyond
+
+x-database-url: &database-url
+  # Separate from DATABASE_URL so a host-side .env (pointing at localhost) never
+  # leaks into containers. Set DOCKER_DATABASE_URL to use a managed database.
+  DATABASE_URL: ${DOCKER_DATABASE_URL:-postgres://beyond:${POSTGRES_PASSWORD:-beyond-local-only}@db:5432/beyond}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: beyond
+      POSTGRES_DB: beyond
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-beyond-local-only}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beyond -d beyond"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Not published to the host; only the app network can reach it.
+
+  migrate:
+    build:
+      context: .
+      target: migrator
+    image: beyond-notes-migrate:latest
+    environment:
+      <<: *database-url
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+    image: beyond-notes:latest
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      <<: *database-url
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env (openssl rand -base64 48)}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      CRON_SECRET: ${CRON_SECRET:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # Hardened runtime: read-only root filesystem, writable tmpfs only where
+    # Next.js writes, no privilege escalation, no Linux capabilities.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache:uid=1000,gid=1000
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+
+volumes:
+  pgdata:

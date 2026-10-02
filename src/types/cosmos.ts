@@ -1,5 +1,16 @@
-/** Particle kinds understood by the galaxy shader. */
-export const STAR_KIND = { disk: 0, bulge: 1, nebula: 2, field: 3, dust: 4 } as const;
+/**
+ * Particle kinds understood by the galaxy shader. `distant` / `distantGlow`
+ * belong to the small background galaxies, which live in screen space.
+ */
+export const STAR_KIND = {
+  disk: 0,
+  bulge: 1,
+  nebula: 2,
+  field: 3,
+  dust: 4,
+  distant: 5,
+  distantGlow: 6,
+} as const;
 export type StarKind = (typeof STAR_KIND)[keyof typeof STAR_KIND];
 
 /** How many particles of each kind to generate. */
@@ -9,12 +20,33 @@ export type GalaxyCounts = {
   nebula: number;
   field: number;
   dust: number;
+  /** Multiplier for the background galaxies' star counts (scales with screen area). */
+  distant: number;
+};
+
+/** A small background galaxy, placed by composition rather than simulated. */
+export type DistantGalaxy = {
+  shape: "spiral" | "elliptical" | "edge-on";
+  /** Centre in normalised device coordinates (-1..1). */
+  anchor: readonly [number, number];
+  /** Radius as a fraction of half the viewport's shorter side. */
+  radius: number;
+  /** Minor/major axis ratio: 1 is face-on, small values are steeply inclined. */
+  axisRatio: number;
+  /** Position angle of the major axis, radians. */
+  angle: number;
+  /** Star count before area scaling. */
+  stars: number;
+  /** Overall brightness multiplier (0..1). */
+  brightness: number;
 };
 
 /**
- * Interleaved vertex data. `positions`: (radius, angle, height) for galaxy
- * particles or (ndcX, ndcY, depth) for field stars. `attributes`:
- * (size, brightness, phase, kind).
+ * Vertex data, four floats per particle in each array. `positions` holds
+ * (radius, angle, height, 0) for the main galaxy, (ndcX, ndcY, depth, 0) for
+ * field stars and (anchorX, anchorY, offsetX, offsetY) for background
+ * galaxies, offsets in half-shorter-side units. `attributes`: (size,
+ * brightness, phase, kind).
  */
 export type StarBuffers = {
   positions: Float32Array;

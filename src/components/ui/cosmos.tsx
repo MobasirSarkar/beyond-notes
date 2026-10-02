@@ -4,7 +4,7 @@ import { animate, createTimer } from "animejs";
 import { useEffect, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { countsFor, generateGalaxy } from "@/lib/cosmos/generate";
+import { countsFor, distantGalaxiesFor, generateGalaxy } from "@/lib/cosmos/generate";
 import { createGalaxyRenderer, readThemeInk } from "@/lib/cosmos/renderer";
 import { cn } from "@/lib/utils/cn";
 import type { CosmosVariant, GalaxyFrame, GalaxyLayout } from "@/types/cosmos";
@@ -12,8 +12,8 @@ import type { CosmosVariant, GalaxyFrame, GalaxyLayout } from "@/types/cosmos";
 type Props = { variant: CosmosVariant; className?: string };
 
 const SETTINGS = {
-  hero: { fps: 60, maxDpr: 1.75, spin: 0.032, gain: { dark: 1, light: 0.85 } },
-  ambient: { fps: 30, maxDpr: 1.25, spin: 0.012, gain: { dark: 0.5, light: 0.32 } },
+  hero: { fps: 60, maxDpr: 1.75, spin: 0.032, gain: { dark: 1, light: 0.95 } },
+  ambient: { fps: 30, maxDpr: 1.25, spin: 0.012, gain: { dark: 0.62, light: 0.58 } },
 } as const;
 
 /** Composition per variant and viewport shape. */
@@ -74,7 +74,9 @@ export function Cosmos({ variant, className }: Props) {
       return rect;
     };
     const rect = sizeAndSeed();
-    renderer.setStars(generateGalaxy(countsFor(variant, rect.width, rect.height)));
+    renderer.setStars(
+      generateGalaxy(countsFor(variant, rect.width, rect.height), distantGalaxiesFor(variant)),
+    );
 
     // Animated view state (tweened by anime.js, eased toward pointer/scroll targets).
     const view = {
