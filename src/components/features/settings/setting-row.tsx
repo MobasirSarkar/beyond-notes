@@ -7,8 +7,8 @@ export function SettingRow({ title, description, children }: Props) {
   return (
     <div className="flex flex-col gap-3 py-5 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
       <div className="flex max-w-md flex-col gap-1">
-        <p className="text-sm font-medium">{title}</p>
-        {description ? <p className="text-xs leading-relaxed text-muted">{description}</p> : null}
+        <h3 className="type-subheading">{title}</h3>
+        {description ? <p className="text-sm text-muted">{description}</p> : null}
       </div>
       <div className="shrink-0">{children}</div>
     </div>

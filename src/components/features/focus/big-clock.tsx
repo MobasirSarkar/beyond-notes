@@ -49,7 +49,11 @@ export function BigClock({
       ref={ref}
       role="timer"
       aria-label={value}
-      className={cn("flex items-center justify-center heading", className, LEADING)}
+      className={cn(
+        "flex items-center justify-center font-display font-medium",
+        className,
+        LEADING,
+      )}
     >
       {[...value].map((ch, i) =>
         ch === ":" ? (

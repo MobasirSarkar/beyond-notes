@@ -25,7 +25,7 @@ export function TopBar() {
           className="flex min-w-0 items-center gap-2.5 text-sm"
           aria-label="Beyond Notes home"
         >
-          <span className="heading text-lg">beyond</span>
+          <span className="type-wordmark text-lg">beyond</span>
           {current ? (
             <>
               <span aria-hidden className="h-4 w-(--bw) rotate-12 bg-strong/40" />
@@ -41,7 +41,7 @@ export function TopBar() {
           aria-label="Search or run a command"
         >
           <Icon icon={Search} />
-          <span className="hidden truncate sm:inline">search or run a command</span>
+          <span className="hidden truncate sm:inline">Search or run a command</span>
           <Kbd className="ml-auto hidden sm:inline-flex">{isMac ? "⌘K" : "Ctrl K"}</Kbd>
         </button>
 
@@ -53,7 +53,7 @@ export function TopBar() {
             title="Voice capture (v)"
           >
             <Icon icon={Mic} />
-            <span className="hidden lg:inline">voice</span>
+            <span className="hidden lg:inline">Voice</span>
           </Button>
           <Button
             variant="solid"
@@ -62,7 +62,7 @@ export function TopBar() {
             aria-label="Quick capture"
           >
             <Icon icon={Plus} />
-            <span className="hidden sm:inline">capture</span>
+            <span className="hidden sm:inline">Capture</span>
           </Button>
         </div>
       </div>

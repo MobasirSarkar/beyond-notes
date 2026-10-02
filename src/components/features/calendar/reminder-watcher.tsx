@@ -47,11 +47,11 @@ export function ReminderWatcher() {
           /* ignore */
         }
         if (getPrefs().sound) playBeep("alarm");
-        toast(`Reminder · ${t.title}`, {
+        toast(`Reminder: ${t.title}`, {
           description: t.boardName,
           duration: 15_000,
           action: {
-            label: "open",
+            label: "Open",
             onClick: () => router.push(`/boards/${t.boardId}?task=${t.id}`),
           },
         });

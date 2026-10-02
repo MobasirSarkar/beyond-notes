@@ -18,11 +18,12 @@ import { TimeAgo } from "@/components/ui/time-ago";
 import { useCreateNote, useUpdateNote } from "@/lib/api/mutations";
 import { useNotes } from "@/lib/api/queries";
 import { cn } from "@/lib/utils/cn";
+import { plural } from "@/lib/utils/format";
 import { plainExcerpt } from "@/lib/utils/markdown";
 
 type Scope = "active" | "archived";
 
-/** Notes as an `ls -l`-style listing: dense, scannable, keyboard friendly. */
+/** Notes as a dense, scannable table: name, excerpt, last modified. */
 export function NotesList() {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -48,11 +49,9 @@ export function NotesList() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="library"
-        title="notes"
-        description={
-          notes.data ? `${list.length} ${scope} note${list.length === 1 ? "" : "s"}` : " "
-        }
+        eyebrow="Library"
+        title="Notes"
+        description={notes.data ? plural(list.length, `${scope} note`) : " "}
         actions={
           <Button variant="solid" onClick={newNote} disabled={create.isPending}>
             <Icon icon={Plus} /> new note
@@ -67,7 +66,7 @@ export function NotesList() {
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="full-text search"
+            placeholder="Search notes"
             maxLength={120}
             aria-label="Search notes"
             className="w-full sm:w-72"
@@ -78,8 +77,8 @@ export function NotesList() {
             value={scope}
             onChange={setScope}
             options={[
-              { value: "active", label: "active" },
-              { value: "archived", label: "archived" },
+              { value: "active", label: "Active" },
+              { value: "archived", label: "Archived" },
             ]}
           />
           {notes.isFetching ? <Spinner className="text-muted" label="Loading notes" /> : null}
@@ -100,8 +99,8 @@ export function NotesList() {
       </div>
 
       {notes.isPending ? (
-        <p className="text-sm text-muted">
-          <Spinner /> reading notes…
+        <p className="flex items-center gap-2 text-sm text-muted">
+          <Spinner /> Loading notes…
         </p>
       ) : list.length === 0 ? (
         <EmptyState
@@ -109,7 +108,7 @@ export function NotesList() {
           action={
             q || tag ? null : (
               <Button onClick={newNote} size="sm">
-                write the first one (n)
+                Write the first one
               </Button>
             )
           }
@@ -122,12 +121,12 @@ export function NotesList() {
         <ul className="overflow-hidden rounded-panel glass [&>li+li]:rule-t">
           <li
             aria-hidden
-            className="hidden grid-cols-[1rem_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 px-5 py-3 label md:grid"
+            className="hidden grid-cols-[1rem_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 px-5 py-3 type-overline md:grid"
           >
             <span />
-            <span>name</span>
-            <span>excerpt</span>
-            <span className="text-right">modified</span>
+            <span>Name</span>
+            <span>Excerpt</span>
+            <span className="text-right">Modified</span>
           </li>
           <AnimatePresence initial={false}>
             {list.map((n) => (
@@ -144,7 +143,7 @@ export function NotesList() {
                   className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-4 gap-y-1 px-5 py-3.5 transition-colors duration-(--dur-1) hover:bg-surface-2/50 md:grid-cols-[1rem_minmax(0,16rem)_minmax(0,1fr)_8rem] md:items-center"
                 >
                   <Icon icon={n.pinned ? Pin : FileText} className="size-3.5 text-subtle" />
-                  <span className="truncate text-sm font-medium">{n.title || "untitled"}</span>
+                  <span className="truncate text-sm font-medium">{n.title || "Untitled"}</span>
                   <span className="col-start-2 truncate text-xs text-muted md:col-start-auto md:text-sm">
                     {n.tags.length > 0 ? (
                       <span className="mr-3 text-subtle">
@@ -166,7 +165,7 @@ export function NotesList() {
                     "opacity-0 group-hover:opacity-100",
                   )}
                 >
-                  {n.pinned ? "unpin" : "pin"}
+                  {n.pinned ? "Unpin" : "Pin"}
                 </button>
               </motion.li>
             ))}

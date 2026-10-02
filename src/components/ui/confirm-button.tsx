@@ -35,7 +35,7 @@ export function ConfirmButton({
         onConfirm();
       }}
     >
-      {armed ? "confirm?" : children}
+      {armed ? "Press again to confirm" : children}
     </Button>
   );
 }

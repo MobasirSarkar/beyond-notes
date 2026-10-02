@@ -18,6 +18,7 @@ import {
 } from "@/lib/api/mutations";
 import { cn } from "@/lib/utils/cn";
 import { formText } from "@/lib/utils/form";
+import { plural } from "@/lib/utils/format";
 import { parseCapture } from "@/lib/utils/nl-parse";
 import type { ColumnDto, TaskDto } from "@/types/dto";
 
@@ -90,7 +91,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
       )}
     >
       <header className="flex h-12 items-center gap-2 pr-2 pl-4">
-        <h2 className="min-w-0 flex-1 truncate subheading">
+        <h2 className="min-w-0 flex-1 truncate type-subheading">
           {column.isDone ? (
             <Icon icon={Check} className="mr-1.5 inline size-3 align-[-0.1em] text-subtle" />
           ) : null}
@@ -98,7 +99,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
         </h2>
         <span
           className={cn(
-            "rounded-full px-2 py-0.5 font-mono text-2xs tabular-nums",
+            "rounded-full px-2 py-0.5 type-numeric text-2xs",
             overLimit ? "bg-fg text-bg" : "bg-surface-2/60 text-muted",
           )}
           title={
@@ -114,29 +115,31 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
           label={<Icon icon={MoreHorizontal} />}
           ariaLabel={`${column.name} column options`}
           items={[
-            { id: "rename", label: "rename", onSelect: () => setEditing("name") },
-            { id: "wip", label: "set wip limit", onSelect: () => setEditing("wip") },
+            { id: "rename", label: "Rename", onSelect: () => setEditing("name") },
+            { id: "wip", label: "Set WIP limit", onSelect: () => setEditing("wip") },
             {
               id: "done",
-              label: column.isDone ? "unmark done column" : "mark as done column",
+              label: column.isDone ? "Unmark as done column" : "Mark as done column",
               onSelect: () => updateColumn.mutate({ columnId: column.id, isDone: !column.isDone }),
             },
             {
               id: "left",
-              label: "move left",
+              label: "Move left",
               disabled: isFirst,
               onSelect: () => moveColumn.mutate({ columnId: column.id, direction: "left" }),
             },
             {
               id: "right",
-              label: "move right",
+              label: "Move right",
               disabled: isLast,
               onSelect: () => moveColumn.mutate({ columnId: column.id, direction: "right" }),
             },
             {
               id: "delete",
               danger: true,
-              label: confirmDelete ? `confirm delete (+${tasks.length} tasks)` : "delete column…",
+              label: confirmDelete
+                ? `Confirm: delete with ${plural(tasks.length, "task")}`
+                : "Delete column…",
               onSelect: () =>
                 confirmDelete
                   ? deleteColumn.mutate({ columnId: column.id })
@@ -157,7 +160,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
             max={editing === "wip" ? 99 : undefined}
             maxLength={40}
             defaultValue={editing === "name" ? column.name : (column.wipLimit ?? "")}
-            placeholder={editing === "wip" ? "0 = no limit" : undefined}
+            placeholder={editing === "wip" ? "0 for no limit" : undefined}
             onKeyDown={(e) => e.key === "Escape" && setEditing(null)}
             className="h-8"
           />
@@ -177,7 +180,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
           </AnimatePresence>
           {tasks.length === 0 ? (
             <li className="pointer-events-none grid flex-1 place-items-center rounded-card rule-dashed py-8 text-xs text-subtle hairline">
-              drop here
+              Drop tasks here
             </li>
           ) : null}
         </ul>
@@ -191,7 +194,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
               autoFocus
               maxLength={200}
               aria-label={`New task in ${column.name}`}
-              placeholder="title  tomorrow  !!  #tag"
+              placeholder="Title, e.g. “Ship v2 tomorrow !! #launch”"
               onKeyDown={(e) => e.key === "Escape" && setAdding(false)}
               onBlur={(e) => !e.currentTarget.value && setAdding(false)}
               className="h-8"
@@ -203,7 +206,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
             onClick={() => setAdding(true)}
             className="flex h-9 w-full items-center gap-2 rounded-card px-3 text-left text-xs text-muted transition-colors duration-(--dur-1) hover:bg-surface-2/60 hover:text-fg"
           >
-            <Icon icon={Plus} className="size-3.5" /> add task
+            <Icon icon={Plus} className="size-3.5" /> Add task
           </button>
         )}
       </footer>

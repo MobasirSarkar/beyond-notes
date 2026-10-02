@@ -104,9 +104,31 @@ never at production.
   based; Tailwind's px border utilities are replaced by `hairline`, `rule-{t,b,l,r}`, `edge-{l,b}`.
 - **Emphasis without color.** Priority is a four-bar signal mark, urgency a soft glow, overdue an
   inverted chip, heatmap levels are stars of increasing size and brightness.
-- **Typography.** Headings and sub-headings use **Geist Pixel** (Square) via the `heading` /
-  `subheading` utilities; reading text is **Geist Sans**; labels, numbers and code are **Geist Mono**.
-  Icons are **lucide** line icons at a 1.5 stroke (`Icon`).
+- **Typography.** One type system, expressed as roles in `globals.css` — components pick a role,
+  never an ad-hoc mix of font, size, weight and tracking:
+
+  | Role              | Font                  | Use                                        |
+  | ----------------- | --------------------- | ------------------------------------------ |
+  | `type-hero`       | Geist Pixel           | Landing wordmark                           |
+  | `type-display`    | Geist Pixel           | Standalone screens (404, error, offline)   |
+  | `type-title`      | Geist Pixel           | Page titles (h1), stat values, note titles |
+  | `type-heading`    | Geist Pixel           | Sheet / dialog titles, feature cards       |
+  | `type-subheading` | Geist Sans 600        | Panel, column and section headings         |
+  | `type-overline`   | Geist Mono, uppercase | Eyebrows, table and group headers          |
+  | `type-label`      | Geist Sans 500        | Form field labels                          |
+  | `type-caption`    | Geist Sans            | Hints and secondary metadata               |
+  | `type-numeric`    | Geist Mono, tabular   | Clocks, counts, ids, keys                  |
+
+  Geist Pixel is reserved for title-level sizes, where it renders crisply; below ~20px headings use
+  Geist Sans. The type scale (`--text-2xs` … `--text-3xl`, plus fluid `--text-title`, `--text-display`,
+  `--text-hero`) and per-role tracking are tokens. Headings use `text-wrap: balance`, running text
+  `text-wrap: pretty`, Markdown sits on a 68ch measure, and figures are tabular.
+
+- **Copy.** Sentence case everywhere — titles, buttons, labels, menus, placeholders and toasts; proper
+  nouns keep their capitals (GitHub, JSON, WIP). Overlines are uppercased by CSS so the source stays
+  readable for screen readers. Full sentences end with a period, fragments don't; ellipses mark
+  progress ("Saving…") and actions that ask for more ("Delete column…"). Only the lowercase
+  **beyond** wordmark is exempt (`type-wordmark`).
 - **Hierarchy.** Every page uses `PageHeader` (eyebrow → title → description → actions) inside the
   shared `page` container; content is grouped with `Frame`, `Rule` and `SettingRow`.
 

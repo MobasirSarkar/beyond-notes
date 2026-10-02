@@ -2,7 +2,23 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
-const TICKS = Array.from({ length: 60 }, (_, i) => i);
+// Server and browser can differ in the last bits of Math.cos/sin, which would
+// make SSR'd attributes mismatch on hydration; round the geometry once here.
+const round = (n: number) => Math.round(n * 1000) / 1000;
+const TICKS = Array.from({ length: 60 }, (_, t) => {
+  const major = t % 5 === 0;
+  const a = (t / 60) * Math.PI * 2;
+  const r1 = 49.5;
+  const r2 = major ? 47.6 : 48.6;
+  return {
+    t,
+    major,
+    x1: round(50 + r1 * Math.cos(a)),
+    y1: round(50 + r1 * Math.sin(a)),
+    x2: round(50 + r2 * Math.cos(a)),
+    y2: round(50 + r2 * Math.sin(a)),
+  };
+});
 const R = 44;
 const C = 2 * Math.PI * R;
 
@@ -33,24 +49,18 @@ export function OrbitDial({ progress, running, label, children, className }: Pro
     >
       <svg viewBox="0 0 100 100" aria-hidden className="absolute inset-0 size-full -rotate-90">
         <g className="text-line">
-          {TICKS.map((t) => {
-            const major = t % 5 === 0;
-            const a = (t / 60) * Math.PI * 2;
-            const r1 = 49.5;
-            const r2 = major ? 47.6 : 48.6;
-            return (
-              <line
-                key={t}
-                x1={50 + r1 * Math.cos(a)}
-                y1={50 + r1 * Math.sin(a)}
-                x2={50 + r2 * Math.cos(a)}
-                y2={50 + r2 * Math.sin(a)}
-                stroke="currentColor"
-                strokeWidth={major ? 0.35 : 0.2}
-                className={cn(major && "text-subtle")}
-              />
-            );
-          })}
+          {TICKS.map(({ t, major, x1, y1, x2, y2 }) => (
+            <line
+              key={t}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="currentColor"
+              strokeWidth={major ? 0.35 : 0.2}
+              className={cn(major && "text-subtle")}
+            />
+          ))}
         </g>
         <circle cx={50} cy={50} r={R} fill="none" stroke="var(--line)" strokeWidth={0.25} />
         <circle

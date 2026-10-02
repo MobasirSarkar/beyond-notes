@@ -1,9 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
 const DISMISS_KEY = "bn:install-dismissed";
 
@@ -53,10 +55,10 @@ export function InstallPrompt() {
               setEvent(null);
             }}
           >
-            install
+            Install
           </Button>
           <Button size="sm" variant="ghost" onClick={dismiss} aria-label="Dismiss">
-            ×
+            <Icon icon={X} className="size-3.5" />
           </Button>
         </motion.aside>
       ) : null}

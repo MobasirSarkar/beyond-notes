@@ -20,11 +20,13 @@ export function PageHeader({ eyebrow, title, description, actions, className, ch
     <header className={cn("mb-(--section-gap) flex flex-col gap-4", className)}>
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-col gap-2">
-          <p className="label">{eyebrow}</p>
-          <h1 className="truncate heading text-display">
+          <p className="type-overline">{eyebrow}</p>
+          <h1 className="type-title">
             <RevealText text={title} />
           </h1>
-          {description ? <p className="text-sm text-muted">{description}</p> : null}
+          {description ? (
+            <p className="max-w-(--measure) text-sm text-muted">{description}</p>
+          ) : null}
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>

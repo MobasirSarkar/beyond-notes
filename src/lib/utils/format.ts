@@ -5,10 +5,11 @@ export function relativeDue(iso: string, now = new Date()): RelativeDue {
   const d = new Date(iso);
   const days = differenceInCalendarDays(d, now);
   const tone = d.getTime() < now.getTime() ? "overdue" : days <= 1 ? "soon" : "later";
-  if (isToday(d)) return { label: `today ${format(d, "HH:mm")}`, tone };
-  if (isTomorrow(d)) return { label: "tomorrow", tone };
-  if (isYesterday(d)) return { label: "yesterday", tone };
-  if (Math.abs(days) < 7) return { label: days > 0 ? `in ${days}d` : `${-days}d ago`, tone };
+  if (isToday(d)) return { label: `Today, ${format(d, "HH:mm")}`, tone };
+  if (isTomorrow(d)) return { label: "Tomorrow", tone };
+  if (isYesterday(d)) return { label: "Yesterday", tone };
+  if (Math.abs(days) < 7)
+    return { label: days > 0 ? `In ${days} days` : `${-days} days ago`, tone };
   return { label: format(d, "d MMM"), tone };
 }
 
@@ -27,4 +28,14 @@ export function fromLocalInput(value: string): string | null {
   if (!value) return null;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+/** "1 task", "3 tasks" — regular English plurals only. */
+export function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? "" : "s"}`;
+}
+
+/** "system" → "System": for showing enum-like values in sentence-case UI. */
+export function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }

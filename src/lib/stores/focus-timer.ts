@@ -208,9 +208,9 @@ export function formatClock(ms: number): string {
 }
 
 export const FOCUS_LABEL: Record<FocusKind, string> = {
-  focus: "focus",
-  short_break: "short break",
-  long_break: "long break",
+  focus: "Focus",
+  short_break: "Short break",
+  long_break: "Long break",
 };
 
 export const LONG_BREAK_INTERVAL = LONG_BREAK_EVERY;

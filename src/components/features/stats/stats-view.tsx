@@ -12,7 +12,7 @@ import { Stat } from "@/components/ui/stat";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useStats } from "@/lib/api/queries";
 import { cn } from "@/lib/utils/cn";
-import { formatDuration } from "@/lib/utils/format";
+import { formatDuration, plural } from "@/lib/utils/format";
 import type { FocusStatsDto } from "@/types/dto";
 
 /**
@@ -20,7 +20,7 @@ import type { FocusStatsDto } from "@/types/dto";
  * brightness grow with focus time, so the heatmap reads like a star chart.
  */
 const LEVELS = [
-  { label: "none", dot: "size-1 opacity-20" },
+  { label: "None", dot: "size-1 opacity-20" },
   { label: "< 25m", dot: "size-1.5 opacity-45" },
   { label: "25–60m", dot: "size-2 opacity-70" },
   { label: "1–2h", dot: "size-2.5 opacity-90" },
@@ -74,7 +74,7 @@ function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
             <span
               key={d.day}
               data-heat=""
-              title={`${format(parseISO(d.day), "EEE d MMM")} · ${d.seconds ? formatDuration(d.seconds) : "no focus"}`}
+              title={`${format(parseISO(d.day), "EEE d MMM")} · ${d.seconds ? formatDuration(d.seconds) : "No focus"}`}
               className="grid size-5 place-items-center hover:inset-frame"
             >
               <Star level={level(d.seconds)} />
@@ -125,7 +125,7 @@ function WeeklyBars({ weekly }: { weekly: FocusStatsDto["weekly"] }) {
           className="grid grid-cols-[4ch_minmax(0,1fr)_3ch] items-center gap-3 text-xs"
           title={`${w.week}: ${w.completed} completed`}
         >
-          <span className="text-subtle">{w.week.replace(/^\d{4}-/, "").toLowerCase()}</span>
+          <span className="type-numeric text-subtle">{w.week.replace(/^\d{4}-/, "")}</span>
           <span className="relative h-1.5 bg-line/40">
             <span
               data-bar=""
@@ -133,7 +133,7 @@ function WeeklyBars({ weekly }: { weekly: FocusStatsDto["weekly"] }) {
               style={{ width: `${(w.completed / max) * 100}%` }}
             />
           </span>
-          <span className="text-right text-muted tabular-nums">{w.completed}</span>
+          <span className="text-right type-numeric text-muted">{w.completed}</span>
         </li>
       ))}
     </ul>
@@ -149,9 +149,9 @@ export function StatsView() {
   return (
     <div className="flex flex-col">
       <PageHeader
-        eyebrow="telemetry"
-        title="stats"
-        description="focus time, streaks and throughput"
+        eyebrow="Telemetry"
+        title="Stats"
+        description="Focus time, streaks and throughput"
         actions={
           <Segmented
             label="Display"
@@ -159,8 +159,8 @@ export function StatsView() {
             value={view}
             onChange={setView}
             options={[
-              { value: "chart", label: "chart" },
-              { value: "table", label: "table" },
+              { value: "chart", label: "Chart" },
+              { value: "table", label: "Table" },
             ]}
           />
         }
@@ -168,10 +168,12 @@ export function StatsView() {
 
       {stats.isPending ? (
         <p className="flex items-center gap-2 text-sm text-muted">
-          <Spinner /> charting your orbit…
+          <Spinner /> Loading stats…
         </p>
       ) : !stats.data ? (
-        <p className="text-sm">! could not load stats</p>
+        <p className="text-sm text-muted">
+          Couldn’t load stats. Check your connection and try again.
+        </p>
       ) : (
         <StatsBody data={stats.data} view={view} />
       )}
@@ -185,27 +187,27 @@ function StatsBody({ data, view }: { data: FocusStatsDto; view: View }) {
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat
-          label="focus time"
+          label="Focus time"
           value={formatDuration(totals.focusSeconds)}
           hint={`${totals.sessions} sessions`}
         />
         <Stat
-          label="streak"
-          value={`${totals.currentStreak}d`}
-          hint={`best ${totals.longestStreak}d`}
+          label="Streak"
+          value={plural(totals.currentStreak, "day")}
+          hint={`Best: ${plural(totals.longestStreak, "day")}`}
         />
-        <Stat label="completed" value={totals.completedTasks} hint={`${totals.openTasks} open`} />
-        <Stat label="notes" value={totals.notes} hint="active" />
+        <Stat label="Completed" value={totals.completedTasks} hint={`${totals.openTasks} open`} />
+        <Stat label="Notes" value={totals.notes} hint="Active" />
       </div>
 
       {view === "table" ? (
         <div className="grid gap-6 md:grid-cols-2">
-          <Frame title="focus per day" bodyClassName="p-0">
+          <Frame title="Focus per day" bodyClassName="p-0">
             <table className="w-full text-sm">
-              <thead className="label">
+              <thead className="type-overline">
                 <tr className="rule-b">
-                  <th className="px-4 py-2 text-left font-normal">day</th>
-                  <th className="px-4 py-2 text-right font-normal">focus</th>
+                  <th className="px-4 py-2 text-left font-medium">Day</th>
+                  <th className="px-4 py-2 text-right font-medium">Focus</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,12 +225,12 @@ function StatsBody({ data, view }: { data: FocusStatsDto; view: View }) {
               </tbody>
             </table>
           </Frame>
-          <Frame title="completed per week" bodyClassName="p-0">
+          <Frame title="Completed per week" bodyClassName="p-0">
             <table className="w-full text-sm">
-              <thead className="label">
+              <thead className="type-overline">
                 <tr className="rule-b">
-                  <th className="px-4 py-2 text-left font-normal">week</th>
-                  <th className="px-4 py-2 text-right font-normal">tasks</th>
+                  <th className="px-4 py-2 text-left font-medium">Week</th>
+                  <th className="px-4 py-2 text-right font-medium">Tasks</th>
                 </tr>
               </thead>
               <tbody>
@@ -244,19 +246,19 @@ function StatsBody({ data, view }: { data: FocusStatsDto; view: View }) {
         </div>
       ) : (
         <div className="grid gap-6 xl:grid-cols-2">
-          <Frame title="focus · 12 weeks" bodyClassName="overflow-x-auto">
+          <Frame title="Focus · last 12 weeks" bodyClassName="overflow-x-auto">
             <Heatmap daily={daily} />
           </Frame>
-          <Frame title="completed per week">
+          <Frame title="Completed per week">
             <WeeklyBars weekly={weekly} />
           </Frame>
         </div>
       )}
 
-      <Frame title="top tasks" meta="last 30 days">
+      <Frame title="Top tasks" meta="Last 30 days">
         {topTasks.length === 0 ? (
           <p className="text-sm text-subtle">
-            no focus sessions yet. start one from the focus window (4).
+            No focus sessions yet. Start one from Focus (press 4).
           </p>
         ) : (
           <ol className="flex flex-col">

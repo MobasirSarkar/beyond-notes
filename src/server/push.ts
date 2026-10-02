@@ -42,8 +42,8 @@ export async function dispatchDueReminders(): Promise<ReminderDispatchResult> {
         .filter((s) => s.userId === reminder.userId)
         .map(async (s) => {
           const payload: PushPayload = {
-            title: `⏰ ${reminder.title}`,
-            body: "Task reminder",
+            title: reminder.title,
+            body: "Reminder",
             dueAt: reminder.dueAt?.toISOString() ?? null,
             url: `/boards/${reminder.boardId}?task=${reminder.taskId}`,
             tag: `task-${reminder.taskId}`,

@@ -16,6 +16,7 @@ import { useBoard } from "@/lib/api/queries";
 import { PRIORITY_META } from "@/lib/constants/priority";
 import { comparePosition } from "@/lib/utils/position";
 import { formText } from "@/lib/utils/form";
+import { plural } from "@/lib/utils/format";
 import type { BoardDto, TaskDto } from "@/types/dto";
 import type { BoardFilters, ColumnItems } from "@/types/kanban";
 
@@ -88,9 +89,9 @@ export function BoardView({ initial }: { initial: BoardDto }) {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="board"
+        eyebrow="Board"
         title={board.name}
-        description={`${board.columns.length} columns · ${openCount} open · ${board.tasks.length - openCount} done`}
+        description={`${plural(board.columns.length, "column")} · ${openCount} open · ${board.tasks.length - openCount} done`}
         actions={
           renaming ? (
             <form
@@ -115,7 +116,7 @@ export function BoardView({ initial }: { initial: BoardDto }) {
           ) : (
             <>
               <Button size="sm" variant="ghost" onClick={() => setRenaming(true)}>
-                rename
+                Rename
               </Button>
               <ConfirmButton
                 onConfirm={() =>
@@ -125,7 +126,7 @@ export function BoardView({ initial }: { initial: BoardDto }) {
                   )
                 }
               >
-                delete board
+                Delete board
               </ConfirmButton>
             </>
           )
@@ -169,7 +170,7 @@ export function BoardView({ initial }: { initial: BoardDto }) {
             <Input
               name="name"
               maxLength={40}
-              placeholder="new column…"
+              placeholder="New column…"
               aria-label="New column name"
             />
           </form>

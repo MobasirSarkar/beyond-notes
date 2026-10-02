@@ -30,7 +30,7 @@ export function MicButton({ listening, supported, onClick, size = "md", classNam
           <span className="absolute -top-0.5 -right-0.5 size-1.5 animate-pulse rounded-full bg-current" />
         ) : null}
       </span>
-      {listening ? "rec" : "mic"}
+      {listening ? "Stop" : "Dictate"}
     </Button>
   );
 }

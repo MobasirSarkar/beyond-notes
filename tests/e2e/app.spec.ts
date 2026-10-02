@@ -72,12 +72,12 @@ test.describe("signed-in flows", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1, name: "beyond" })).toBeVisible();
     await shot(page, "01-landing");
-    await page.getByRole("link", { name: /start for free/ }).click();
+    await page.getByRole("link", { name: /start for free/i }).click();
     await expect(page).toHaveURL(/\/sign-up/);
-    await page.getByLabel("handle").fill("e2e");
-    await page.getByLabel("email").fill(email);
-    await page.getByLabel("password").fill("pixel-perfect-42");
-    await page.getByRole("button", { name: "create account" }).click();
+    await page.getByLabel("Name").fill("e2e");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill("pixel-perfect-42");
+    await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/boards\/[0-9a-f-]{36}/, { timeout: 15_000 });
     for (const col of ["Backlog", "To Do", "Doing", "Done"]) {
       await expect(page.getByRole("region", { name: `${col} column` })).toBeVisible();
@@ -87,15 +87,15 @@ test.describe("signed-in flows", () => {
 
   test("adds a task inline with natural-language parsing", async () => {
     const todo = page.getByRole("region", { name: "To Do column" });
-    await todo.getByRole("button", { name: "add task" }).click();
+    await todo.getByRole("button", { name: "Add task" }).click();
     const input = todo.getByRole("textbox", { name: "New task in To Do" });
     await input.fill("Ship pixel release tomorrow !!! #launch");
     await input.press("Enter");
     const card = todo.getByRole("button", { name: "Ship pixel release" });
     await expect(card).toBeVisible();
     await expect(card).toContainText("#launch");
-    await expect(card).toContainText("tomorrow");
-    await expect(card.locator('[aria-label="high priority"]')).toBeVisible();
+    await expect(card).toContainText("Tomorrow");
+    await expect(card.locator('[aria-label="High priority"]')).toBeVisible();
     await input.press("Escape");
     await shot(page, "02-board");
   });
@@ -140,7 +140,7 @@ test.describe("signed-in flows", () => {
     const input = page.getByLabel("What needs doing?");
     await expect(input).toBeVisible();
     await input.fill("call the printer friday 3pm urgent #ops");
-    await expect(page.getByRole("dialog")).toContainText("urgent");
+    await expect(page.getByRole("dialog")).toContainText("Urgent");
     await shot(page, "04-capture");
     await input.press("Enter");
     await expect(page.getByRole("button", { name: "Call the printer" })).toBeVisible();
@@ -149,7 +149,7 @@ test.describe("signed-in flows", () => {
 
   test("command palette searches notes", async () => {
     await page.keyboard.press("Control+k");
-    const box = page.getByPlaceholder("search tasks & notes, or type a command");
+    const box = page.getByPlaceholder("Search tasks and notes, or type a command");
     await expect(box).toBeFocused();
     await box.fill("keybo");
     await expect(page.getByRole("option", { name: /README/ })).toBeVisible({ timeout: 10_000 });
@@ -162,7 +162,7 @@ test.describe("signed-in flows", () => {
     await page.keyboard.press("2");
     await expect(page).toHaveURL(/\/notes$/);
     await expect(page.locator("nav[aria-label=Windows] a[aria-current=page]")).toContainText(
-      "notes",
+      "Notes",
     );
     await page.keyboard.press("1");
     await expect(page).toHaveURL(/\/boards/);
@@ -170,7 +170,7 @@ test.describe("signed-in flows", () => {
 
   test("writes a note that autosaves", async () => {
     await page.goto("/notes");
-    await page.getByRole("button", { name: "new note" }).click();
+    await page.getByRole("button", { name: "New note" }).click();
     await expect(page).toHaveURL(/\/notes\/[0-9a-f-]{36}/);
     await page.getByLabel("Note title").fill("e2e note");
     await page.getByLabel("Note content (Markdown)").fill("# Hello\n\n- [x] pixel\n- [ ] perfect");
@@ -183,18 +183,18 @@ test.describe("signed-in flows", () => {
 
   test("focus timer keeps running across windows", async () => {
     await page.goto("/focus");
-    await page.getByRole("button", { name: /start/ }).click();
-    await expect(page.getByRole("button", { name: /pause/ })).toBeVisible();
+    await page.getByRole("button", { name: /start/i }).click();
+    await expect(page.getByRole("button", { name: /pause/i })).toBeVisible();
     await shot(page, "07-focus");
     await page.keyboard.press("3");
     await expect(page.getByRole("grid")).toBeVisible();
     await expect(page.getByRole("link", { name: /Focus timer running/ })).toBeVisible();
     await shot(page, "08-calendar");
     await page.goto("/focus");
-    await page.getByRole("button", { name: /pause/ }).click();
-    await page.getByRole("button", { name: /reset/ }).click();
+    await page.getByRole("button", { name: /pause/i }).click();
+    await page.getByRole("button", { name: /reset/i }).click();
     await page.goto("/stats");
-    await expect(page.getByText("focus · 12 weeks")).toBeVisible();
+    await expect(page.getByText("Focus · last 12 weeks")).toBeVisible();
     await shot(page, "09-stats");
   });
 
@@ -207,7 +207,7 @@ test.describe("signed-in flows", () => {
     await page.goto("/settings");
     // The shared galaxy backdrop renders behind the app and can be switched off.
     await expect(page.locator("canvas[aria-hidden]")).toHaveCount(1);
-    await page.getByRole("checkbox", { name: "on" }).first().click();
+    await page.getByRole("checkbox", { name: "On", exact: true }).first().click();
     await expect(page.locator("canvas[aria-hidden]")).toHaveCount(0);
     await shot(page, "10-settings");
     await page.getByRole("button", { name: "sign out" }).click();

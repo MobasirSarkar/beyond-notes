@@ -24,7 +24,7 @@ function parsePayload(data: PushMessageData | null): PushPayload | null {
         ? p["url"]
         : "/boards";
     return {
-      title: typeof p["title"] === "string" ? p["title"].slice(0, 120) : "Beyond Notes",
+      title: typeof p["title"] === "string" ? p["title"].slice(0, 120) : "Beyond",
       body: typeof p["body"] === "string" ? p["body"].slice(0, 240) : "",
       url,
       tag: typeof p["tag"] === "string" ? p["tag"].slice(0, 80) : "reminder",

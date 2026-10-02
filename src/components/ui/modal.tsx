@@ -97,7 +97,7 @@ export function Modal({
             <div
               className={cn("flex h-12 shrink-0 items-center gap-3 px-5 rule-b", bare && "sr-only")}
             >
-              <h2 id={titleId} className="truncate subheading">
+              <h2 id={titleId} className="truncate type-subheading">
                 {title}
               </h2>
               <button
@@ -106,7 +106,7 @@ export function Modal({
                 className="ml-auto flex items-center gap-2 text-xs text-muted hover:text-fg"
                 aria-label="Close"
               >
-                <Kbd>esc</Kbd>
+                <Kbd>Esc</Kbd>
               </button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>

@@ -18,7 +18,7 @@ export function EmptyState({ title, children, action, className }: Props) {
         <span className="absolute inset-3.5 rounded-full bg-fg" />
         <span className="absolute top-1 right-1 size-1.5 rounded-full bg-fg" />
       </span>
-      <p className="heading text-lg">{title}</p>
+      <p className="type-heading">{title}</p>
       {children ? <p className="max-w-sm text-sm text-muted">{children}</p> : null}
       {action}
     </div>

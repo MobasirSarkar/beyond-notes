@@ -11,28 +11,28 @@ import type { NavWindow } from "@/types/ui";
 
 /** The app's windows, shown in the bottom dock (press 1–6). */
 export const NAV_WINDOWS = [
-  { index: 1, href: "/boards", label: "boards", description: "Kanban boards", icon: SquareKanban },
-  { index: 2, href: "/notes", label: "notes", description: "Markdown notes", icon: NotebookPen },
+  { index: 1, href: "/boards", label: "Boards", description: "Kanban boards", icon: SquareKanban },
+  { index: 2, href: "/notes", label: "Notes", description: "Markdown notes", icon: NotebookPen },
   {
     index: 3,
     href: "/calendar",
-    label: "calendar",
-    description: "Due dates & reminders",
+    label: "Calendar",
+    description: "Due dates and reminders",
     icon: CalendarDays,
   },
-  { index: 4, href: "/focus", label: "focus", description: "Pomodoro timer", icon: Timer },
+  { index: 4, href: "/focus", label: "Focus", description: "Pomodoro timer", icon: Timer },
   {
     index: 5,
     href: "/stats",
-    label: "stats",
-    description: "Activity & streaks",
+    label: "Stats",
+    description: "Activity and streaks",
     icon: ChartNoAxesColumn,
   },
   {
     index: 6,
     href: "/settings",
-    label: "settings",
-    description: "Preferences & account",
+    label: "Settings",
+    description: "Preferences and account",
     icon: Settings2,
   },
 ] as const satisfies readonly NavWindow[];

@@ -12,7 +12,7 @@ import { useBoards } from "@/lib/api/queries";
 import { cn } from "@/lib/utils/cn";
 import { formText } from "@/lib/utils/form";
 
-/** Boards as tabs (replacing the old sidebar list), plus an inline "new board". */
+/** Boards as tabs, plus an inline “New board” control. */
 export function BoardTabs({ activeId }: { activeId: string }) {
   const router = useRouter();
   const boards = useBoards();
@@ -49,7 +49,7 @@ export function BoardTabs({ activeId }: { activeId: string }) {
             )}
           >
             {b.name}
-            <span className="text-xs text-subtle tabular-nums">{b.openTasks}</span>
+            <span className="type-numeric text-xs text-subtle">{b.openTasks}</span>
           </Link>
         );
       })}
@@ -60,7 +60,7 @@ export function BoardTabs({ activeId }: { activeId: string }) {
             autoFocus
             maxLength={60}
             aria-label="New board name"
-            placeholder="board name ↵"
+            placeholder="Board name"
             onBlur={() => setAdding(false)}
             onKeyDown={(e) => e.key === "Escape" && setAdding(false)}
             className="h-8 w-44"
@@ -72,7 +72,7 @@ export function BoardTabs({ activeId }: { activeId: string }) {
           onClick={() => setAdding(true)}
           className="flex h-10 shrink-0 items-center gap-2 px-3 text-sm text-subtle hover:text-fg"
         >
-          <Icon icon={Plus} className="size-3.5" /> new board
+          <Icon icon={Plus} className="size-3.5" /> New board
         </button>
       )}
     </nav>
