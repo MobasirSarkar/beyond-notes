@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, createTimer } from "animejs";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { countsFor, generateGalaxy } from "@/lib/cosmos/generate";
@@ -37,6 +37,24 @@ function layoutFor(variant: CosmosVariant, width: number, height: number): Galax
 export function Cosmos({ variant, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
+  // Bumped when the browser restores a lost WebGL context, to rebuild the scene.
+  const [contextEpoch, setContextEpoch] = useState(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onLost = (e: Event) => {
+      e.preventDefault(); // signals we'll handle restoration
+      delete canvas.dataset["ready"];
+    };
+    const onRestored = () => setContextEpoch((n) => n + 1);
+    canvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextrestored", onRestored);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -110,6 +128,7 @@ export function Cosmos({ variant, className }: Props) {
       themeObserver.disconnect();
       scheme.removeEventListener("change", onThemeChange);
       window.removeEventListener("resize", onResize);
+      delete canvas.dataset["ready"];
       renderer.dispose();
     };
 
@@ -178,7 +197,7 @@ export function Cosmos({ variant, className }: Props) {
       window.removeEventListener("scroll", onScroll);
       teardownBase();
     };
-  }, [variant, reduced]);
+  }, [variant, reduced, contextEpoch]);
 
   return (
     <canvas

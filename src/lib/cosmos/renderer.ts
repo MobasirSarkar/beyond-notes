@@ -55,7 +55,8 @@ export function createGalaxyRenderer(canvas: HTMLCanvasElement): GalaxyRenderer 
     premultipliedAlpha: false,
     powerPreference: "low-power",
   });
-  if (!gl) return null;
+  // A canvas hands back the same context forever; once lost, it can't draw.
+  if (!gl || gl.isContextLost()) return null;
 
   const link = (vertex: string, fragment: string): WebGLProgram | null => {
     try {
@@ -180,7 +181,8 @@ export function createGalaxyRenderer(canvas: HTMLCanvasElement): GalaxyRenderer 
       gl.deleteBuffer(skyBuffer);
       gl.deleteProgram(program);
       gl.deleteProgram(skyProgram);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      // Never force-lose the context here: React (Strict Mode, fast refresh)
+      // can mount again on this same canvas, and a lost context is permanent.
     },
   };
 }
