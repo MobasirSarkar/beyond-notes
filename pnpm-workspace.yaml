@@ -1,0 +1,9 @@
+allowBuilds:
+  "@swc/core": true
+  sharp: true
+  esbuild: true
+  unrs-resolver: true
+
+# Security: force patched transitive versions (GHSA-73wf-gq98-2v4g).
+overrides:
+  browserslist: ">=4.28.7"
