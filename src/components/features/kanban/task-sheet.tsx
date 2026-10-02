@@ -14,10 +14,9 @@ import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
 import { Icon } from "@/components/ui/icon";
 import { Modal } from "@/components/ui/modal";
-import { PriorityMark } from "@/components/ui/priority-mark";
 import { Progress } from "@/components/ui/progress";
 import { Rule } from "@/components/ui/rule";
-import { Segmented } from "@/components/ui/segmented";
+import { StepSlider } from "@/components/ui/step-slider";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import {
   useCreateSubtask,
@@ -27,24 +26,13 @@ import {
   useUpdateTask,
 } from "@/lib/api/mutations";
 import { focusTimer } from "@/lib/stores/focus-timer";
-import { LIMITS, PRIORITIES } from "@/lib/schemas/input";
+import { PRIORITY_STEPS } from "@/lib/constants/priority";
+import { LIMITS } from "@/lib/schemas/input";
 import { cn } from "@/lib/utils/cn";
 import { formatDuration, fromLocalInput, toLocalInput } from "@/lib/utils/format";
-import type { Priority } from "@/types/domain";
 import type { TaskDto } from "@/types/dto";
-import type { SegmentOption } from "@/types/ui";
 
 import { LabelInput } from "./label-input";
-
-const PRIORITY_OPTIONS: readonly SegmentOption<Priority>[] = PRIORITIES.map((p) => ({
-  value: p,
-  label: (
-    <span className="inline-flex items-center gap-2">
-      {p === "none" ? null : <PriorityMark priority={p} />}
-      {p}
-    </span>
-  ),
-}));
 
 export function TaskSheet({ task, onClose }: { task: TaskDto | null; onClose: () => void }) {
   return (
@@ -118,16 +106,14 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
 
       <section className="flex flex-col gap-5">
         <Rule>properties</Rule>
-        <Field label="priority">
-          <Segmented
-            label="Priority"
-            size="sm"
-            value={task.priority}
-            options={PRIORITY_OPTIONS}
-            onChange={(priority) => update.mutate({ taskId: task.id, priority })}
-            className="w-full"
-          />
-        </Field>
+        <StepSlider
+          label="priority"
+          value={task.priority}
+          steps={PRIORITY_STEPS}
+          onChange={(priority) => update.mutate({ taskId: task.id, priority })}
+          start="calm"
+          end="pressing"
+        />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="due" htmlFor={`${ids}-due`}>
             <Input

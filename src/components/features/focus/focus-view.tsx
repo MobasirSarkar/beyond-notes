@@ -8,7 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { Frame } from "@/components/ui/frame";
 import { Icon } from "@/components/ui/icon";
-import { Input, Select } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Listbox } from "@/components/ui/listbox";
 import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import { useOpenTasks } from "@/lib/api/queries";
@@ -151,18 +152,19 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
         <div className="grid gap-6 md:grid-cols-2">
           <Frame title="target">
             <Field label="working on" htmlFor={`${ids}-task`}>
-              <Select
+              <Listbox
                 id={`${ids}-task`}
                 value={taskId ?? ""}
-                onChange={(e) => focusTimer.setTask(e.target.value || null)}
-              >
-                <option value="">free focus</option>
-                {tasks.data?.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.boardName} / {t.title.slice(0, 60)}
-                  </option>
-                ))}
-              </Select>
+                onChange={(v) => focusTimer.setTask(v || null)}
+                options={[
+                  { value: "", label: "free focus" },
+                  ...(tasks.data ?? []).map((t) => ({
+                    value: t.id,
+                    label: t.title.slice(0, 80),
+                    hint: t.boardName,
+                  })),
+                ]}
+              />
             </Field>
           </Frame>
 

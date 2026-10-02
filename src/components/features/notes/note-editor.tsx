@@ -10,7 +10,7 @@ import { Waveform } from "@/components/features/voice/waveform";
 import { LabelInput } from "@/components/features/kanban/label-input";
 import { Field } from "@/components/ui/field";
 import { Icon } from "@/components/ui/icon";
-import { Select } from "@/components/ui/input";
+import { Listbox } from "@/components/ui/listbox";
 import { Menu } from "@/components/ui/menu";
 import { Segmented } from "@/components/ui/segmented";
 import { Spinner } from "@/components/ui/spinner";
@@ -145,18 +145,19 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           />
         </Field>
         <Field label="linked task" htmlFor={`${ids}-task`}>
-          <Select
+          <Listbox
             id={`${ids}-task`}
             value={note.taskId ?? ""}
-            onChange={(e) => update.mutate({ noteId: note.id, taskId: e.target.value || null })}
-          >
-            <option value="">none</option>
-            {openTasks.data?.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.title.slice(0, 60)}
-              </option>
-            ))}
-          </Select>
+            onChange={(v) => update.mutate({ noteId: note.id, taskId: v || null })}
+            options={[
+              { value: "", label: "none" },
+              ...(openTasks.data ?? []).map((t) => ({
+                value: t.id,
+                label: t.title.slice(0, 80),
+                hint: t.boardName,
+              })),
+            ]}
+          />
         </Field>
       </div>
 

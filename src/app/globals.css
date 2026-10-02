@@ -15,17 +15,18 @@
   --fg: oklch(0.2 0 0);
   --fg-muted: oklch(0.44 0 0);
   --fg-subtle: oklch(0.6 0 0);
-  --line: oklch(0.2 0 0 / 0.11);
+  --line: oklch(0.2 0 0 / 0.14);
   --line-strong: oklch(0.2 0 0);
   --overlay: oklch(0.97 0 0 / 0.55);
   --selection: oklch(0.86 0 0);
   --glow: oklch(0.2 0 0 / 0.3);
   /* Glass: translucent fills over the galaxy, a lit top edge and soft depth. */
-  --panel: oklch(1 0 0 / 0.62);
-  --panel-strong: oklch(1 0 0 / 0.86);
-  --card: oklch(1 0 0 / 0.78);
+  /* Near-opaque so the galaxy reads as backdrop, never through the content. */
+  --panel: oklch(0.975 0 0 / 0.9);
+  --panel-strong: oklch(0.985 0 0 / 0.97);
+  --card: oklch(1 0 0 / 0.98);
   --highlight: oklch(1 0 0 / 0.9);
-  --shadow-color: oklch(0.2 0 0 / 0.1);
+  --shadow-color: oklch(0.2 0 0 / 0.14);
 
   /* — Type — Geist Sans for reading, Geist Mono for data, Geist Pixel for display. */
   --font-family-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -41,6 +42,7 @@
   --radius-control: 0.625rem;
   --radius-card: 0.875rem;
   --radius-panel: 1.25rem;
+  --slider-pad: 1rem;
   --blur: 1.25rem;
   --shadow-float:
     0 1.5rem 3rem -1.25rem var(--shadow-color), 0 0.25rem 0.75rem -0.25rem var(--shadow-color);
@@ -88,15 +90,15 @@
     --fg: oklch(0.94 0 0);
     --fg-muted: oklch(0.72 0 0);
     --fg-subtle: oklch(0.56 0 0);
-    --line: oklch(1 0 0 / 0.1);
+    --line: oklch(1 0 0 / 0.14);
     --line-strong: oklch(0.94 0 0);
     --overlay: oklch(0.08 0 0 / 0.6);
     --selection: oklch(0.36 0 0);
     --glow: oklch(1 0 0 / 0.55);
-    --panel: oklch(0.17 0 0 / 0.55);
-    --panel-strong: oklch(0.17 0 0 / 0.84);
-    --card: oklch(0.22 0 0 / 0.62);
-    --highlight: oklch(1 0 0 / 0.08);
+    --panel: oklch(0.195 0 0 / 0.9);
+    --panel-strong: oklch(0.205 0 0 / 0.97);
+    --card: oklch(0.255 0 0 / 0.96);
+    --highlight: oklch(1 0 0 / 0.09);
     --shadow-color: oklch(0 0 0 / 0.6);
     color-scheme: dark;
   }
@@ -109,15 +111,15 @@
   --fg: oklch(0.94 0 0);
   --fg-muted: oklch(0.72 0 0);
   --fg-subtle: oklch(0.56 0 0);
-  --line: oklch(1 0 0 / 0.1);
+  --line: oklch(1 0 0 / 0.14);
   --line-strong: oklch(0.94 0 0);
   --overlay: oklch(0.08 0 0 / 0.6);
   --selection: oklch(0.36 0 0);
   --glow: oklch(1 0 0 / 0.55);
-  --panel: oklch(0.17 0 0 / 0.55);
-  --panel-strong: oklch(0.17 0 0 / 0.84);
-  --card: oklch(0.22 0 0 / 0.62);
-  --highlight: oklch(1 0 0 / 0.08);
+  --panel: oklch(0.195 0 0 / 0.9);
+  --panel-strong: oklch(0.205 0 0 / 0.97);
+  --card: oklch(0.255 0 0 / 0.96);
+  --highlight: oklch(1 0 0 / 0.09);
   --shadow-color: oklch(0 0 0 / 0.6);
   color-scheme: dark;
 }

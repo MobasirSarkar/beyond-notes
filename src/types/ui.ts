@@ -37,4 +37,10 @@ export type MenuItemDef = {
 
 export type SegmentOption<T extends string> = { value: T; label: ReactNode };
 
+/** An option of the styled `Listbox` (a native <select> replacement). */
+export type ListboxOption<T extends string> = { value: T; label: string; hint?: string };
+
+/** A stop on a `StepSlider`; `hint` is shown beside the value in the stacked layout. */
+export type SliderStep<T extends string> = { value: T; label: string; hint?: string };
+
 export type Toastable = { title: string; description?: string };
