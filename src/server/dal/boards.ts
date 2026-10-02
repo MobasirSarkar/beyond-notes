@@ -2,8 +2,9 @@ import "server-only";
 
 import { and, count, desc, eq, gt, isNull, lt, sql } from "drizzle-orm";
 
-import type { BoardDto, BoardSummaryDto, ColumnDto, TaskDto } from "@/lib/dto";
-import { comparePosition, keyBetween, keysAfter } from "@/lib/position";
+import type { BoardDto, BoardSummaryDto, ColumnDto, TaskDto } from "@/types/dto";
+import type { UpdateColumnData } from "@/types/input";
+import { comparePosition, keyBetween, keysAfter } from "@/lib/utils/position";
 
 import { db } from "../db";
 import { board, boardColumn, focusSession, subtask, task } from "../db/schema";
@@ -48,17 +49,18 @@ const toColumnDto = (c: typeof boardColumn.$inferSelect): ColumnDto => ({
 /* ---------------------------------- Reads ---------------------------------- */
 
 export async function listBoards(userId: string): Promise<BoardSummaryDto[]> {
-  const rows = await db
+  return db
     .select({
       id: board.id,
       name: board.name,
       position: board.position,
-      openTasks: sql<number>`(select count(*)::int from ${task} where ${task.boardId} = ${board.id} and ${task.completedAt} is null)`,
+      openTasks: sql<number>`count(${task.id})::int`,
     })
     .from(board)
+    .leftJoin(task, and(eq(task.boardId, board.id), isNull(task.completedAt)))
     .where(eq(board.userId, userId))
+    .groupBy(board.id)
     .orderBy(byPosition(board.position));
-  return rows;
 }
 
 export async function getFirstBoardId(userId: string): Promise<string | null> {
@@ -203,11 +205,7 @@ export async function createColumn(
 export async function updateColumn(
   userId: string,
   columnId: string,
-  patch: {
-    name?: string | undefined;
-    wipLimit?: number | null | undefined;
-    isDone?: boolean | undefined;
-  },
+  patch: Omit<UpdateColumnData, "columnId">,
 ): Promise<ColumnDto> {
   return db.transaction(async (tx) => {
     const [updated] = await tx

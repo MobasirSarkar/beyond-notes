@@ -2,12 +2,15 @@ import "server-only";
 
 import { and, eq, inArray, isNull, lte, sql } from "drizzle-orm";
 
+import type { DueReminder } from "@/types/api";
+import type { PushSubscriptionData } from "@/types/input";
+
 import { db } from "../db";
 import { pushSubscription, task } from "../db/schema";
 
 export async function savePushSubscription(
   userId: string,
-  sub: { endpoint: string; keys: { p256dh: string; auth: string } },
+  sub: PushSubscriptionData,
   userAgent: string | null,
 ): Promise<void> {
   await db
@@ -35,14 +38,6 @@ export async function deletePushSubscriptionsByEndpoint(endpoints: string[]): Pr
   if (endpoints.length === 0) return;
   await db.delete(pushSubscription).where(inArray(pushSubscription.endpoint, endpoints));
 }
-
-export type DueReminder = {
-  taskId: string;
-  boardId: string;
-  userId: string;
-  title: string;
-  dueAt: Date | null;
-};
 
 /**
  * Atomically claims up to `limit` due reminders (marks them sent) so concurrent

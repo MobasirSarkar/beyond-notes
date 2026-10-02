@@ -2,16 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import {
-  getRecognizerCtor,
-  type Recognizer,
-  type SpeechRecognitionFailureEvent,
-  type SpeechRecognitionResultEvent,
-} from "@/types/speech";
+import { getRecognizerCtor } from "@/lib/browser/platform";
 
 export type SpeechStatus = "idle" | "listening" | "error" | "unsupported";
 
-const ERROR_MESSAGES: Record<string, string> = {
+const ERROR_MESSAGES: Partial<Record<SpeechRecognitionErrorCode, string>> = {
   "not-allowed": "Microphone permission denied. Allow it in your browser settings.",
   "service-not-allowed": "Speech service not allowed in this browser.",
   "audio-capture": "No microphone found.",
@@ -20,34 +15,24 @@ const ERROR_MESSAGES: Record<string, string> = {
   "language-not-supported": "Language not supported.",
 };
 
-const noop = () => () => {};
+const noopSubscribe = () => () => {};
+const isSupported = () => getRecognizerCtor() !== null;
 
-/**
- * Typed wrapper around the browser Web Speech API.
- * `onFinal` receives each finalised phrase; `interim` holds the live partial.
- */
-export function useSpeechRecognition(opts: {
-  lang?: string;
-  continuous?: boolean;
-  onFinal?: (text: string) => void;
-}) {
-  const supported = useSyncExternalStore(
-    noop,
-    () => getRecognizerCtor() !== null,
-    () => true,
-  );
+type Options = { lang?: string; continuous?: boolean; onFinal?: (text: string) => void };
+
+/** Typed wrapper around the Web Speech API. `onFinal` receives each finalised phrase. */
+export function useSpeechRecognition({ lang, continuous = false, onFinal }: Options) {
+  const supported = useSyncExternalStore(noopSubscribe, isSupported, () => true);
   const [status, setStatus] = useState<SpeechStatus>("idle");
   const [interim, setInterim] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const recRef = useRef<Recognizer | null>(null);
-  const onFinalRef = useRef(opts.onFinal);
+  const recRef = useRef<SpeechRecognition | null>(null);
+  const onFinalRef = useRef(onFinal);
   useEffect(() => {
-    onFinalRef.current = opts.onFinal;
-  }, [opts.onFinal]);
+    onFinalRef.current = onFinal;
+  }, [onFinal]);
 
-  const stop = useCallback(() => {
-    recRef.current?.stop();
-  }, []);
+  const stop = useCallback(() => recRef.current?.stop(), []);
 
   const start = useCallback(() => {
     const Ctor = getRecognizerCtor();
@@ -57,8 +42,8 @@ export function useSpeechRecognition(opts: {
     }
     recRef.current?.abort();
     const rec = new Ctor();
-    rec.lang = opts.lang ?? (navigator.language || "en-US");
-    rec.continuous = opts.continuous ?? false;
+    rec.lang = lang ?? (navigator.language || "en-US");
+    rec.continuous = continuous;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
 
@@ -66,8 +51,7 @@ export function useSpeechRecognition(opts: {
       setError(null);
       setStatus("listening");
     });
-    rec.addEventListener("result", (event) => {
-      const e = event as SpeechRecognitionResultEvent;
+    rec.addEventListener("result", (e) => {
       let partial = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const result = e.results[i];
@@ -81,8 +65,7 @@ export function useSpeechRecognition(opts: {
       }
       setInterim(partial);
     });
-    rec.addEventListener("error", (event) => {
-      const e = event as SpeechRecognitionFailureEvent;
+    rec.addEventListener("error", (e) => {
       if (e.error === "aborted") return;
       setError(ERROR_MESSAGES[e.error] ?? `Speech error: ${e.error}`);
       setStatus("error");
@@ -100,13 +83,13 @@ export function useSpeechRecognition(opts: {
       setError("Could not start the microphone.");
       setStatus("error");
     }
-  }, [opts.lang, opts.continuous]);
+  }, [lang, continuous]);
 
   useEffect(() => () => recRef.current?.abort(), []);
 
   return {
     supported,
-    status: supported ? status : ("unsupported" as const),
+    status: supported ? status : "unsupported",
     listening: status === "listening",
     interim,
     error,

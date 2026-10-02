@@ -1,43 +1,60 @@
-import { AsciiField } from "@/components/ascii/ascii-field";
-import { Panel } from "@/components/ascii/panel";
-import { BootSequence } from "@/components/landing/boot-sequence";
-import { FeatureGrid } from "@/components/landing/feature-grid";
+import Link from "next/link";
+
+import { FeatureList } from "@/components/features/landing/feature-list";
+import { Hero } from "@/components/features/landing/hero";
+import { buttonStyles } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
+import { Rule } from "@/components/ui/rule";
 import { getSession } from "@/server/session";
+
+const KEYS = [
+  ["⌘K", "command palette"],
+  ["t", "capture a task"],
+  ["v", "capture by voice"],
+  ["n", "new note"],
+  ["1–6", "switch window"],
+  ["?", "all shortcuts"],
+] as const;
 
 export default async function LandingPage() {
   const session = await getSession();
   return (
-    <main id="main" className="relative min-h-dvh overflow-hidden">
-      <AsciiField className="pointer-events-none fixed inset-0 h-full w-full opacity-40" />
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_10%,var(--bg)_75%)]" />
-
-      <section className="relative flex min-h-dvh flex-col justify-center py-16">
-        <BootSequence signedIn={session !== null} />
-      </section>
-
-      <section className="relative z-10 mx-auto max-w-6xl px-4 pb-24">
-        <FeatureGrid />
-        <Panel title="keyboard first" className="mx-auto mt-16 max-w-3xl">
-          <ul className="term grid grid-cols-1 gap-2 text-xl sm:grid-cols-2">
-            {[
-              ["⌘ K", "command palette"],
-              ["t", "quick capture task"],
-              ["n", "new note"],
-              ["g b", "go to boards"],
-              ["g f", "go to focus"],
-              ["?", "all shortcuts"],
-            ].map(([k, d]) => (
-              <li key={k} className="flex items-center gap-3">
-                <span className="px-kbd">{k}</span>
-                <span className="text-fg-dim">{d}</span>
+    <>
+      <header className="rule-b">
+        <div className="page flex h-(--header-h) items-center justify-between">
+          <span className="text-sm font-bold">beyond</span>
+          <Link
+            href={session ? "/boards" : "/sign-in"}
+            className={buttonStyles({ size: "sm", variant: "ghost" })}
+          >
+            {session ? "open →" : "sign in"}
+          </Link>
+        </div>
+      </header>
+      <main id="main">
+        <Hero signedIn={session !== null} />
+        <section className="page flex flex-col gap-8 py-(--section-gap)">
+          <Rule>what&apos;s inside</Rule>
+          <FeatureList />
+        </section>
+        <section className="page flex flex-col gap-8 pb-(--section-gap)">
+          <Rule>keyboard first</Rule>
+          <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+            {KEYS.map(([k, d]) => (
+              <li key={k} className="flex items-center gap-3 text-sm">
+                <Kbd className="min-w-10">{k}</Kbd>
+                <span className="text-muted">{d}</span>
               </li>
             ))}
           </ul>
-        </Panel>
-        <footer className="term mt-16 text-center text-lg text-muted">
-          ── beyond notes · built with next.js 16 · works offline · installable ──
-        </footer>
-      </section>
-    </main>
+        </section>
+      </main>
+      <footer className="rule-t">
+        <div className="page flex flex-wrap justify-between gap-2 py-6 text-xs text-subtle">
+          <span>beyond · plain-text productivity</span>
+          <span>offline · installable · open source friendly</span>
+        </div>
+      </footer>
+    </>
   );
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { NoteEditor } from "@/components/notes/note-editor";
-import { idSchema } from "@/lib/validation";
+import { NoteEditor } from "@/components/features/notes/note-editor";
+import { idSchema } from "@/lib/schemas/input";
 import { getNote } from "@/server/dal/notes";
 import { requireUser } from "@/server/session";
 

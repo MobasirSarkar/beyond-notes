@@ -10,7 +10,7 @@ import {
   moveTaskInput,
   updateSubtaskInput,
   updateTaskInput,
-} from "@/lib/validation";
+} from "@/lib/schemas/input";
 
 export const createTaskAction = authedAction
   .metadata({ name: "createTask" })

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { keysAfter } from "@/lib/position";
+import { keysAfter } from "@/lib/utils/position";
 
 import { db } from "../db";
 import { board, boardColumn, note, task } from "../db/schema";

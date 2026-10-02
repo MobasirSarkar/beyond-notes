@@ -2,7 +2,7 @@ import "server-only";
 
 import { sql } from "drizzle-orm";
 
-import type { SearchHitDto } from "@/lib/dto";
+import type { SearchHitDto } from "@/types/dto";
 
 import { db } from "../db";
 import { note, task } from "../db/schema";

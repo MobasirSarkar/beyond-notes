@@ -1,7 +1,7 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import type { z } from "zod";
+import { z } from "zod";
 
 import { consumeRateLimit } from "./rate-limit";
 import { getSession } from "./session";
@@ -12,12 +12,15 @@ export function jsonError(status: number, error: string): NextResponse {
   return NextResponse.json({ error }, { status, headers: NO_STORE });
 }
 
+/** Use for endpoints without query parameters (unknown params are stripped). */
+export const noQuery = z.object({});
+
 /**
  * Wraps a read endpoint: authenticates from the session cookie, rate limits per
  * user, validates query params and never leaks internal error details.
  */
 export function authedGet<S extends z.ZodType, T>(
-  querySchema: S | null,
+  querySchema: S,
   handler: (args: { userId: string; query: z.infer<S>; request: Request }) => Promise<T>,
 ) {
   return async (request: Request): Promise<NextResponse> => {
@@ -28,13 +31,9 @@ export function authedGet<S extends z.ZodType, T>(
       return jsonError(429, "Too many requests");
     }
 
-    let query: z.infer<S> = undefined as z.infer<S>;
-    if (querySchema) {
-      const params = Object.fromEntries(new URL(request.url).searchParams);
-      const parsed = querySchema.safeParse(params);
-      if (!parsed.success) return jsonError(400, "Invalid query");
-      query = parsed.data;
-    }
+    const parsed = querySchema.safeParse(Object.fromEntries(new URL(request.url).searchParams));
+    if (!parsed.success) return jsonError(400, "Invalid query");
+    const query = parsed.data;
 
     try {
       const data = await handler({ userId: session.user.id, query, request });

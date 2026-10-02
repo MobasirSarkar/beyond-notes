@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { comparePosition, keyBetween, keysAfter } from "@/lib/position";
+import { comparePosition, keyBetween, keysAfter } from "@/lib/utils/position";
 
 describe("fractional positions", () => {
   it("generates strictly increasing keys", () => {

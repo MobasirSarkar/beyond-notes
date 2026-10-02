@@ -1,5 +1,3 @@
-import "@fontsource/vt323/400.css";
-import "@fontsource/press-start-2p/400.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./globals.css";
 
@@ -8,20 +6,20 @@ import { headers } from "next/headers";
 import type { ReactNode } from "react";
 
 import { RootProviders } from "@/components/providers/root-providers";
-import { PREFS_BOOTSTRAP } from "@/lib/prefs";
+import { CHROME_COLOR } from "@/lib/constants/theme";
+import { PREFS_BOOTSTRAP } from "@/lib/stores/prefs";
 
 export const metadata: Metadata = {
-  title: { default: "Beyond Notes", template: "%s · Beyond Notes" },
+  title: { default: "Beyond", template: "%s · Beyond" },
   description:
-    "A pixel-art, offline-first task & notes manager with kanban boards, voice capture, reminders and a focus timer.",
-  applicationName: "Beyond Notes",
-  appleWebApp: { capable: true, title: "Beyond Notes", statusBarStyle: "black-translucent" },
+    "A minimalist, keyboard-first task & notes workspace: kanban, Markdown notes, voice capture, reminders and a focus timer. Works offline.",
+  applicationName: "Beyond",
+  appleWebApp: { capable: true, title: "Beyond", statusBarStyle: "default" },
   formatDetection: { telephone: false },
   icons: {
     icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
-  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
@@ -29,8 +27,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#050a06" },
-    { media: "(prefers-color-scheme: light)", color: "#f3efe3" },
+    { media: "(prefers-color-scheme: dark)", color: CHROME_COLOR.dark },
+    { media: "(prefers-color-scheme: light)", color: CHROME_COLOR.light },
   ],
 };
 
@@ -44,7 +42,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: PREFS_BOOTSTRAP }} />
       </head>
       <body>
-        <a href="#main" className="px-btn sr-only fixed top-2 left-2 z-[200] focus:not-sr-only">
+        <a
+          href="#main"
+          className="sr-only z-(--z-toast) bg-fg px-4 py-2 text-bg focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+        >
           Skip to content
         </a>
         <RootProviders>{children}</RootProviders>

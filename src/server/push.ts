@@ -3,6 +3,7 @@ import "server-only";
 import webpush from "web-push";
 
 import { env } from "@/env";
+import type { PushPayload, ReminderDispatchResult } from "@/types/api";
 
 import {
   claimDueReminders,
@@ -25,21 +26,8 @@ function configure() {
   configured = true;
 }
 
-export type PushPayload = {
-  title: string;
-  body: string;
-  url: string;
-  tag: string;
-  /** ISO due date; the service worker formats it in the device locale. */
-  dueAt: string | null;
-};
-
 /** Sends all due task reminders. Returns delivery counts for observability. */
-export async function dispatchDueReminders(): Promise<{
-  claimed: number;
-  sent: number;
-  pruned: number;
-}> {
+export async function dispatchDueReminders(): Promise<ReminderDispatchResult> {
   const due = await claimDueReminders();
   if (due.length === 0 || !pushEnabled) return { claimed: due.length, sent: 0, pruned: 0 };
   configure();

@@ -10,7 +10,7 @@ import {
   moveColumnInput,
   renameBoardInput,
   updateColumnInput,
-} from "@/lib/validation";
+} from "@/lib/schemas/input";
 
 export const createBoardAction = authedAction
   .metadata({ name: "createBoard" })

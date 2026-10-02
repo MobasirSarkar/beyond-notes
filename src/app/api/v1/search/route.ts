@@ -1,4 +1,4 @@
-import { searchQuery } from "@/lib/validation";
+import { searchQuery } from "@/lib/schemas/input";
 import { authedGet } from "@/server/api";
 import { searchEverything } from "@/server/dal/search";
 

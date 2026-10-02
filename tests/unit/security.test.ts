@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { safeRedirectPath } from "@/lib/safe-redirect";
+import { safeRedirectPath } from "@/lib/utils/safe-redirect";
 import { toPrefixTsQuery } from "@/server/dal/util";
 
 describe("safeRedirectPath", () => {

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { computeStreaks } from "@/lib/streaks";
+import { computeStreaks } from "@/lib/utils/streaks";
 import {
   createTaskInput,
   labelsSchema,
   logFocusInput,
   pushSubscriptionInput,
-} from "@/lib/validation";
+} from "@/lib/schemas/input";
 
 const iso = (ms: number) => new Date(ms).toISOString();
 

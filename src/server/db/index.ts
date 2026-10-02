@@ -7,14 +7,12 @@ import { env } from "@/env";
 
 import * as schema from "./schema";
 
-const globalForDb = globalThis as unknown as { pgClient?: postgres.Sql };
-
 /**
  * A single pooled client per server instance (reused across hot reloads in dev).
  * `prepare: false` keeps it compatible with PgBouncer/Neon pooled endpoints.
  */
 const client =
-  globalForDb.pgClient ??
+  globalThis.__bnPgClient ??
   postgres(env.DATABASE_URL, {
     prepare: false,
     max: env.NODE_ENV === "production" ? 10 : 5,
@@ -22,7 +20,7 @@ const client =
     connect_timeout: 15,
   });
 
-if (env.NODE_ENV !== "production") globalForDb.pgClient = client;
+if (env.NODE_ENV !== "production") globalThis.__bnPgClient = client;
 
 export const db = drizzle(client, { schema, casing: "snake_case" });
 export type Db = typeof db;

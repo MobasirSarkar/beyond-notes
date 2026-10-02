@@ -76,6 +76,8 @@ describe.skipIf(!hasDb)("data access layer (Postgres)", () => {
     const board = await mod.boards.getBoard(A, boardA);
     expect(board?.columns.map((c) => c.name)).toEqual(["Backlog", "To Do", "Doing", "Done"]);
     expect(board?.tasks.length).toBe(2);
+    const [summary] = await mod.boards.listBoards(A);
+    expect(summary?.openTasks).toBe(2);
     const notes = await mod.notes.listNotes(A, {});
     expect(notes[0]?.title).toBe("README.txt");
   });

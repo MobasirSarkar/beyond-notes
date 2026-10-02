@@ -1,11 +1,15 @@
 import "server-only";
 
 import { and, asc, eq, gte, isNotNull, isNull, lt, sql } from "drizzle-orm";
-import type { z } from "zod";
-
-import type { CalendarTaskDto, OpenTaskDto, SubtaskDto, TaskDto } from "@/lib/dto";
-import { keyBetween } from "@/lib/position";
-import type { createTaskInput, moveTaskInput, updateTaskInput } from "@/lib/validation";
+import type { CalendarTaskDto, OpenTaskDto, SubtaskDto, TaskDto } from "@/types/dto";
+import { keyBetween } from "@/lib/utils/position";
+import type {
+  CreateSubtaskData,
+  CreateTaskData,
+  MoveTaskData,
+  UpdateSubtaskData,
+  UpdateTaskData,
+} from "@/types/input";
 
 import { db, type Tx } from "../db";
 import { board, boardColumn, focusSession, subtask, task } from "../db/schema";
@@ -84,10 +88,7 @@ async function resolveColumn(
   return col;
 }
 
-export async function createTask(
-  userId: string,
-  input: z.infer<typeof createTaskInput>,
-): Promise<TaskDto> {
+export async function createTask(userId: string, input: CreateTaskData): Promise<TaskDto> {
   return db.transaction(async (tx) => {
     if (input.id) {
       // Idempotent replay of an offline/optimistic create.
@@ -129,10 +130,7 @@ export async function createTask(
   });
 }
 
-export async function updateTask(
-  userId: string,
-  input: z.infer<typeof updateTaskInput>,
-): Promise<TaskDto> {
+export async function updateTask(userId: string, input: UpdateTaskData): Promise<TaskDto> {
   const { taskId, dueAt, remindAt, ...rest } = input;
   const patch = {
     ...definedOnly(rest),
@@ -151,10 +149,7 @@ export async function updateTask(
   });
 }
 
-export async function moveTask(
-  userId: string,
-  input: z.infer<typeof moveTaskInput>,
-): Promise<TaskDto> {
+export async function moveTask(userId: string, input: MoveTaskData): Promise<TaskDto> {
   return db.transaction(async (tx) => {
     const [t] = await tx
       .select({ id: task.id, boardId: task.boardId, completedAt: task.completedAt })
@@ -222,10 +217,7 @@ export async function deleteTask(userId: string, taskId: string): Promise<void> 
 
 /* --------------------------------- Subtasks -------------------------------- */
 
-export async function createSubtask(
-  userId: string,
-  input: { id?: string | undefined; taskId: string; title: string },
-): Promise<SubtaskDto> {
+export async function createSubtask(userId: string, input: CreateSubtaskData): Promise<SubtaskDto> {
   return db.transaction(async (tx) => {
     const [parent] = await tx
       .select({ id: task.id })
@@ -265,10 +257,7 @@ export async function createSubtask(
   });
 }
 
-export async function updateSubtask(
-  userId: string,
-  input: { subtaskId: string; title?: string | undefined; done?: boolean | undefined },
-): Promise<SubtaskDto> {
+export async function updateSubtask(userId: string, input: UpdateSubtaskData): Promise<SubtaskDto> {
   const [updated] = await db
     .update(subtask)
     .set(definedOnly({ title: input.title, done: input.done }))

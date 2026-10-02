@@ -1,4 +1,4 @@
-import { noteListQuery } from "@/lib/validation";
+import { noteListQuery } from "@/lib/schemas/input";
 import { authedGet } from "@/server/api";
 import { listNotes, listNoteTags } from "@/server/dal/notes";
 

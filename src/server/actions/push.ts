@@ -6,7 +6,7 @@ import * as dal from "../dal/push";
 import { ActionError } from "../errors";
 import { pushEnabled } from "../push";
 import { authedAction } from "../safe-action";
-import { pushSubscriptionInput, unsubscribePushInput } from "@/lib/validation";
+import { pushSubscriptionInput, unsubscribePushInput } from "@/lib/schemas/input";
 
 export const subscribePushAction = authedAction
   .metadata({ name: "subscribePush" })

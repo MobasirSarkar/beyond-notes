@@ -12,10 +12,10 @@ export const maxPosition = (col: AnyColumn): SQL<string | null> =>
   sql<string | null>`max(${col} collate "C")`;
 
 /** Assigns only keys that are present, keeping `exactOptionalPropertyTypes` happy. */
-export function definedOnly<T extends Record<string, unknown>>(obj: T): Partial<T> {
+export function definedOnly<T extends object>(obj: T): Partial<T> {
   const out: Partial<T> = {};
-  for (const key of Object.keys(obj) as (keyof T)[]) {
-    if (obj[key] !== undefined) out[key] = obj[key];
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key) && obj[key] !== undefined) out[key] = obj[key];
   }
   return out;
 }

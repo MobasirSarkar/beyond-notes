@@ -2,6 +2,8 @@
 import { defaultCache } from "@serwist/turbopack/worker";
 import { NetworkOnly, Serwist, type PrecacheEntry, type SerwistGlobalConfig } from "serwist";
 
+import type { PushPayload } from "@/types/api";
+
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
     __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
@@ -10,13 +12,13 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
-type PushPayload = { title: string; body: string; url: string; tag: string; dueAt: string | null };
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null && !Array.isArray(v);
 
 function parsePayload(data: PushMessageData | null): PushPayload | null {
   try {
-    const raw: unknown = data?.json();
-    if (typeof raw !== "object" || raw === null) return null;
-    const p = raw as Record<string, unknown>;
+    const p: unknown = data?.json();
+    if (!isRecord(p)) return null;
     const url =
       typeof p["url"] === "string" && p["url"].startsWith("/") && !p["url"].startsWith("//")
         ? p["url"]

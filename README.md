@@ -9,7 +9,7 @@
 ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═════╝  NOTES
 ```
 
-A pixel/ASCII-styled, offline-capable **task & notes manager PWA**: kanban boards, Markdown notes,
+A monochrome, minimalist ASCII-styled, offline-capable **task & notes manager PWA**: kanban boards, Markdown notes,
 voice capture with natural-language parsing, calendar + push reminders, a focus timer with stats,
 a command palette and keyboard-first navigation — animated with **anime.js**, **GSAP** and **Motion**.
 
@@ -26,7 +26,7 @@ a command palette and keyboard-first navigation — animated with **anime.js**, 
 | **Stats**     | Focus heatmap (12 weeks), completed-per-week chart, streaks, top tasks, table view                                                                                                                                  |
 | **Palette**   | `⌘K` command palette with full-text search across tasks & notes, actions and navigation; `?` shows all shortcuts                                                                                                    |
 | **PWA**       | Installable, service worker (Serwist), offline fallback, IndexedDB-persisted query cache, **offline mutation queue** replayed on reconnect                                                                          |
-| **Themes**    | Phosphor (green CRT), Amber, Paper (light), or follow the OS; toggleable CRT scanlines; full reduced-motion support                                                                                                 |
+| **Themes**    | Monochrome light / dark (or follow the OS); full reduced-motion support covering GSAP, anime.js and Motion                                                                                                          |
 
 ## Stack
 
@@ -90,35 +90,64 @@ Vercel plan; any external scheduler hitting the URL works too).
 Integration tests **drop and recreate** the schema of `TEST_DATABASE_URL` — point it at a throwaway database,
 never at production.
 
+## Design system
+
+- **Monochrome tokens only.** Every color, border width, layout size, duration and z-index is a CSS
+  variable in `src/app/globals.css` (`--bg`, `--fg`, `--fg-muted`, `--line`, `--bw`, `--header-h`,
+  `--gutter`, `--dur-1`, `--z-overlay`, …). Tailwind's default palette is removed (`--color-*: initial`),
+  so utilities can only use tokens (`bg-surface`, `text-muted`, `rule-b`, `hairline`, …).
+- **rem everywhere.** Spacing, type scale, borders (`--bw: 0.0625rem`) and layout are rem/clamp based;
+  Tailwind's px-based border utilities are replaced by `hairline`, `rule-{t,b,l,r}`, `edge-{l,b}`.
+- **Emphasis without color.** Priority is glyph density (`! !! !!! !!!!`), urgency a heavy edge, overdue
+  an inverted chip, heatmap levels `· ░ ▒ ▓ █`.
+- **Navigation.** A slim top bar (path, search/command, capture) and a tmux-style status line: numbered
+  windows (press `1`–`6`), the running focus timer, sync state and a clock. Boards are tabs on the board page.
+- **Hierarchy.** Every page uses `PageHeader` (path → title → description → actions) inside the shared
+  `page` container; content is grouped with `Frame`, `Rule` and `SettingRow`.
+
 ## Architecture
 
 ```
 src/
-  proxy.ts               per-request CSP nonce + optimistic auth redirect (Next 16 proxy)
-  env.ts                 validated environment
-  app/
-    (marketing)/         landing (boot sequence, ASCII logo, plasma field)
-    (auth)/              sign-in / sign-up
-    (app)/               authenticated shell: boards, notes, calendar, focus, stats, settings
-    api/v1/*             read API (session-authenticated, rate-limited, Zod-typed DTOs)
-    api/cron/reminders   Web Push dispatcher
-    api/export           JSON data export
-    sw.ts                service worker (Serwist): precache, offline fallback, push, notification clicks
-  server/                server-only code
-    db/                  Drizzle schema + client
-    dal/                 data-access layer — every query is scoped by the session user
-    actions/             server actions (next-safe-action, authed + rate-limited)
-  lib/                   shared schemas/DTOs, query hooks, optimistic mutations, NL parser, prefs
-  components/            ascii primitives, kanban, notes, voice, palette, calendar, focus, stats, shell
+  app/                    routes only (thin pages that compose feature components)
+  components/
+    ui/                   reusable primitives: Button, Input, Field, Frame, Modal, Menu, Segmented,
+                          Checkbox, Progress, Spinner, Tag, Kbd, Stat, Rule, PageHeader, ScrambleText…
+    layout/               app shell: TopBar, StatusLine, Overlays (lazy), Hotkeys
+    features/<feature>/   kanban, notes, voice, palette, calendar, focus, stats, settings, auth, landing, pwa
+    providers/            root + app (query cache) providers
+  hooks/                  use-hotkeys, use-speech-recognition, use-reduced-motion, use-latch, use-clock…
+  lib/
+    api/                  fetch client, query keys, queries, optimistic mutations, query client
+    schemas/              Zod schemas (inputs, DTOs, prefs) — runtime validation, shared with the server
+    stores/               tiny typed external stores: ui, prefs, focus timer (selector subscriptions)
+    utils/                pure helpers: position, nl-parse, format, safe-redirect, markdown, cn…
+    constants/            nav windows, shortcuts, priority glyphs, chrome colors
+    browser/              platform, sound, local data wipe
+    animation/            GSAP registration
+  types/                  all shared TypeScript types (DTOs/inputs inferred from Zod, UI, prefs, focus,
+                          kanban, API) + ambient DOM typings (Speech API, install prompt)
+  server/                 server-only: db, auth, data-access layer, actions, rate limiting, push
+  proxy.ts                per-request CSP nonce + optimistic auth redirect
 ```
 
-**Reads** go through `GET /api/v1/*` (cacheable by TanStack Query and persisted to IndexedDB for offline use);
+**Reads** go through `GET /api/v1/*` (cached by TanStack Query and persisted to IndexedDB for offline use);
 **writes** go through server actions with optimistic updates. Mutations are registered as query-client defaults
 so ones made offline are persisted and replayed on reconnect; creates carry client-generated UUIDs so a replay
-is idempotent.
-
-Ordering uses **fractional indexing** (`a0`, `a0V`, …) compared with `COLLATE "C"`; the server computes the new
+is idempotent. Ordering uses **fractional indexing** compared with `COLLATE "C"`; the server computes the new
 key from neighbour ids, so clients never send raw positions.
+
+### Type safety & efficiency
+
+- No `any`, and type assertions are lint errors (`no-unsafe-type-assertion`). JSON boundaries are parsed with
+  Zod, DOM gaps are filled with ambient declarations, narrowing uses type guards.
+- UI state lives in selector-based stores (`useSyncExternalStore`), so opening the palette or ticking the
+  timer only re-renders the components that read that slice.
+- The command palette, capture dialog, shortcut help, task sheet and Markdown renderer are code-split and
+  prefetched when the browser is idle.
+- The focus timer is a single app-wide store: it keeps running across pages, survives reloads and shows in
+  the status line; the clock re-renders once per second only while running.
+- Animations pause off-screen/hidden (landing field) and every library honours reduced motion.
 
 ## Security
 

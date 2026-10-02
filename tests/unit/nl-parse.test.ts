@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseCapture } from "@/lib/nl-parse";
+import { parseCapture } from "@/lib/utils/nl-parse";
 
 // Thursday 2 Oct 2026, 10:00 local time.
 const REF = new Date(2026, 9, 2, 10, 0, 0);

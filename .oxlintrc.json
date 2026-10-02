@@ -71,7 +71,7 @@
     "react/no-array-index-key": "off",
     "oxc/no-map-spread": "off",
     "jsx-a11y/prefer-tag-over-role": "off",
-    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/no-unsafe-type-assertion": "error",
     "react/exhaustive-effect-dependencies": "off"
   },
   "overrides": [

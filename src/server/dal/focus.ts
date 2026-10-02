@@ -1,11 +1,9 @@
 import "server-only";
 
 import { and, count, eq, isNull, sql } from "drizzle-orm";
-import type { z } from "zod";
-
-import type { FocusSessionDto, FocusStatsDto } from "@/lib/dto";
-import { computeStreaks } from "@/lib/streaks";
-import type { logFocusInput } from "@/lib/validation";
+import type { FocusSessionDto, FocusStatsDto } from "@/types/dto";
+import { computeStreaks } from "@/lib/utils/streaks";
+import type { LogFocusData } from "@/types/input";
 
 import { db } from "../db";
 import { focusSession, note, task } from "../db/schema";
@@ -14,7 +12,7 @@ import { iso } from "./util";
 
 export async function logFocusSession(
   userId: string,
-  input: z.infer<typeof logFocusInput>,
+  input: LogFocusData,
 ): Promise<FocusSessionDto> {
   if (input.taskId) {
     const [t] = await db

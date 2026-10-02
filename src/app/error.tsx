@@ -2,7 +2,9 @@
 
 import { useEffect } from "react";
 
-export default function GlobalError({
+import { Button } from "@/components/ui/button";
+
+export default function ErrorBoundary({
   error,
   reset,
 }: {
@@ -13,17 +15,16 @@ export default function GlobalError({
     console.error(error);
   }, [error]);
   return (
-    <main id="main" className="grid min-h-[70dvh] place-items-center p-6">
-      <div className="px-panel max-w-lg p-8 text-center">
-        <p className="pixel text-2xl text-danger">SYSTEM ERROR</p>
-        <p className="term mt-4 text-xl text-fg-dim">
-          Something crashed.{" "}
-          {error.digest ? <span className="text-muted">ref: {error.digest}</span> : null}
-        </p>
-        <button type="button" onClick={reset} className="px-btn mt-6" data-variant="primary">
-          [ REBOOT ]
-        </button>
-      </div>
+    <main id="main" className="page flex min-h-[70dvh] flex-col items-start justify-center gap-6">
+      <p className="label">exit code 1</p>
+      <h1 className="text-display font-bold tracking-tight">something broke.</h1>
+      <p className="text-sm text-muted">
+        An unexpected error occurred.{" "}
+        {error.digest ? <span className="text-subtle">ref {error.digest}</span> : null}
+      </p>
+      <Button variant="solid" onClick={reset}>
+        ↻ try again
+      </Button>
     </main>
   );
 }

@@ -1,4 +1,4 @@
-import { calendarQuery } from "@/lib/validation";
+import { calendarQuery } from "@/lib/schemas/input";
 import { authedGet } from "@/server/api";
 import { listCalendarTasks } from "@/server/dal/tasks";
 

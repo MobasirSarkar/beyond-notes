@@ -1,0 +1,119 @@
+"use client";
+
+import { format } from "date-fns";
+
+import { Button, buttonStyles } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Frame } from "@/components/ui/frame";
+import { PageHeader } from "@/components/ui/page-header";
+import { Segmented } from "@/components/ui/segmented";
+import { useSignOut } from "@/hooks/use-sign-out";
+import { setPrefs, usePrefs } from "@/lib/stores/prefs";
+import type { MotionPref, ThemePref } from "@/types/prefs";
+import type { SegmentOption } from "@/types/ui";
+
+import { PushToggle } from "./push-toggle";
+import { SettingRow } from "./setting-row";
+
+const THEMES: readonly SegmentOption<ThemePref>[] = [
+  { value: "system", label: "system" },
+  { value: "light", label: "light" },
+  { value: "dark", label: "dark" },
+];
+const MOTION: readonly SegmentOption<MotionPref>[] = [
+  { value: "system", label: "system" },
+  { value: "full", label: "full" },
+  { value: "reduced", label: "reduced" },
+];
+
+type Props = {
+  user: { name: string; email: string; createdAt: string };
+  vapidPublicKey: string | null;
+};
+
+export function SettingsView({ user, vapidPublicKey }: Props) {
+  const theme = usePrefs((p) => p.theme);
+  const motion = usePrefs((p) => p.motion);
+  const sound = usePrefs((p) => p.sound);
+  const { signOut, pending } = useSignOut();
+
+  return (
+    <div className="flex flex-col">
+      <PageHeader
+        path="~/settings"
+        title="settings"
+        description="preferences are stored on this device"
+      />
+
+      <div className="flex max-w-3xl flex-col gap-6">
+        <Frame title="appearance">
+          <div className="flex flex-col [&>*+*]:rule-t">
+            <SettingRow title="Theme" description="Monochrome light or dark, or follow the system.">
+              <Segmented
+                label="Theme"
+                size="sm"
+                value={theme}
+                options={THEMES}
+                onChange={(t) => setPrefs({ theme: t })}
+              />
+            </SettingRow>
+            <SettingRow
+              title="Motion"
+              description="Controls every animation (GSAP, anime.js and Motion). “System” follows your OS reduced-motion setting."
+            >
+              <Segmented
+                label="Motion"
+                size="sm"
+                value={motion}
+                options={MOTION}
+                onChange={(m) => setPrefs({ motion: m })}
+              />
+            </SettingRow>
+            <SettingRow
+              title="Sound"
+              description="Short 8-bit blips for drags, completions and timers."
+            >
+              <Checkbox checked={sound} onChange={(s) => setPrefs({ sound: s })}>
+                {sound ? "on" : "off"}
+              </Checkbox>
+            </SettingRow>
+          </div>
+        </Frame>
+
+        <Frame title="notifications">
+          <SettingRow
+            title="Push reminders"
+            description="Get task reminders even when the app is closed."
+          >
+            <PushToggle vapidPublicKey={vapidPublicKey} />
+          </SettingRow>
+        </Frame>
+
+        <Frame title="data">
+          <SettingRow
+            title="Export"
+            description="Download everything you own as JSON: boards, tasks, notes and focus history."
+          >
+            {/* Plain link: a file download, not client navigation. */}
+            <a href="/api/export" download className={buttonStyles({ size: "sm" })}>
+              export json
+            </a>
+          </SettingRow>
+        </Frame>
+
+        <Frame title="account">
+          <div className="flex flex-col [&>*+*]:rule-t">
+            <SettingRow
+              title={`@${user.name}`}
+              description={`${user.email} · joined ${format(new Date(user.createdAt), "d MMM yyyy")}`}
+            >
+              <Button size="sm" variant="danger" onClick={signOut} disabled={pending}>
+                {pending ? "signing out…" : "sign out"}
+              </Button>
+            </SettingRow>
+          </div>
+        </Frame>
+      </div>
+    </div>
+  );
+}

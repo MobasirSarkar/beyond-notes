@@ -3,9 +3,9 @@
 import { writeFileSync } from "node:fs";
 import { chromium } from "@playwright/test";
 
-const G = "#7dff9b"; // phosphor
-const A = "#c6ff3d"; // accent
-const BG = "#050a06";
+const G = "#ededed"; // ink (monochrome)
+const A = "#ededed"; // cursor
+const BG = "#171717";
 
 // 16x16 pixel art: a terminal window with text lines and a block cursor.
 const ART = [

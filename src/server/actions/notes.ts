@@ -2,7 +2,7 @@
 
 import * as dal from "../dal/notes";
 import { authedAction } from "../safe-action";
-import { createNoteInput, deleteNoteInput, updateNoteInput } from "@/lib/validation";
+import { createNoteInput, deleteNoteInput, updateNoteInput } from "@/lib/schemas/input";
 
 export const createNoteAction = authedAction
   .metadata({ name: "createNote" })

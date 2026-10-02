@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 
+import { CHROME_COLOR } from "@/lib/constants/theme";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Beyond Notes",
+    name: "Beyond",
     short_name: "Beyond",
     description:
       "Pixel-art task & notes manager: kanban, voice capture, reminders and focus timer.",
@@ -12,8 +14,8 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     display_override: ["window-controls-overlay", "standalone"],
     orientation: "any",
-    background_color: "#050a06",
-    theme_color: "#050a06",
+    background_color: CHROME_COLOR.dark,
+    theme_color: CHROME_COLOR.dark,
     categories: ["productivity", "utilities"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

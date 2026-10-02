@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { KanbanBoard } from "@/components/kanban/kanban-board";
-import { idSchema } from "@/lib/validation";
+import { BoardView } from "@/components/features/kanban/board-view";
+import { idSchema } from "@/lib/schemas/input";
 import { getBoard } from "@/server/dal/boards";
 import { requireUser } from "@/server/session";
 
@@ -14,5 +14,5 @@ export default async function BoardPage({ params }: PageProps<"/boards/[boardId]
   const user = await requireUser();
   const board = await getBoard(user.id, boardId);
   if (!board) notFound();
-  return <KanbanBoard initial={board} />;
+  return <BoardView initial={board} />;
 }

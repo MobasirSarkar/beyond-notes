@@ -1,10 +1,8 @@
 import "server-only";
 
 import { and, arrayContains, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
-import type { z } from "zod";
-
-import type { NoteDto, NoteSummaryDto } from "@/lib/dto";
-import type { createNoteInput, updateNoteInput } from "@/lib/validation";
+import type { NoteDto, NoteSummaryDto } from "@/types/dto";
+import type { CreateNoteData, UpdateNoteData } from "@/types/input";
 
 import { db } from "../db";
 import { note, task } from "../db/schema";
@@ -94,10 +92,7 @@ async function assertTaskOwned(userId: string, taskId: string | null | undefined
   if (!t) throw new NotFoundError("Task");
 }
 
-export async function createNote(
-  userId: string,
-  input: z.infer<typeof createNoteInput>,
-): Promise<NoteDto> {
+export async function createNote(userId: string, input: CreateNoteData): Promise<NoteDto> {
   await assertTaskOwned(userId, input.taskId);
   if (input.id) {
     const [existing] = await db.select().from(note).where(eq(note.id, input.id));
@@ -121,10 +116,7 @@ export async function createNote(
   return toNoteDto(created);
 }
 
-export async function updateNote(
-  userId: string,
-  input: z.infer<typeof updateNoteInput>,
-): Promise<NoteDto> {
+export async function updateNote(userId: string, input: UpdateNoteData): Promise<NoteDto> {
   const { noteId, archived, taskId, ...rest } = input;
   await assertTaskOwned(userId, taskId);
   const [updated] = await db

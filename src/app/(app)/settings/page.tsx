@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SettingsView } from "@/components/settings/settings-view";
+import { SettingsView } from "@/components/features/settings/settings-view";
 import { env } from "@/env";
 import { requireUser } from "@/server/session";
 

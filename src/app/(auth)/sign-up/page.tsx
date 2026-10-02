@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { AuthForm } from "@/components/auth/auth-form";
+import { AuthForm } from "@/components/features/auth/auth-form";
 import { env } from "@/env";
 import { getSession } from "@/server/session";
 
