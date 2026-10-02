@@ -11,16 +11,20 @@ import { Spinner } from "@/components/ui/spinner";
 import { Stat } from "@/components/ui/stat";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useStats } from "@/lib/api/queries";
+import { cn } from "@/lib/utils/cn";
 import { formatDuration } from "@/lib/utils/format";
 import type { FocusStatsDto } from "@/types/dto";
 
-/** Sequential single-"hue" scale encoded as glyph density. */
+/**
+ * Sequential scale for a monochrome UI: each day is a star whose size and
+ * brightness grow with focus time, so the heatmap reads like a star chart.
+ */
 const LEVELS = [
-  { glyph: "·", label: "none" },
-  { glyph: "░", label: "< 25m" },
-  { glyph: "▒", label: "25–60m" },
-  { glyph: "▓", label: "1–2h" },
-  { glyph: "█", label: "> 2h" },
+  { label: "none", dot: "size-1 opacity-20" },
+  { label: "< 25m", dot: "size-1.5 opacity-45" },
+  { label: "25–60m", dot: "size-2 opacity-70" },
+  { label: "1–2h", dot: "size-2.5 opacity-90" },
+  { label: "> 2h", dot: "size-3 shadow-glow" },
 ] as const;
 
 function level(seconds: number): number {
@@ -29,6 +33,10 @@ function level(seconds: number): number {
   if (seconds < 60 * 60) return 2;
   if (seconds < 120 * 60) return 3;
   return 4;
+}
+
+function Star({ level: l }: { level: number }) {
+  return <span className={cn("rounded-full bg-fg", LEVELS[l]?.dot)} />;
 }
 
 function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
@@ -43,9 +51,10 @@ function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
     if (!el || reduced) return;
     const anim = animate(el.querySelectorAll("[data-heat]"), {
       opacity: [0, 1],
-      delay: stagger(6, { grid: [7, weeks], from: "first", axis: "y" }),
-      duration: 260,
-      ease: "outQuad",
+      scale: [0.4, 1],
+      delay: stagger(8, { grid: [7, weeks], from: "center" }),
+      duration: 420,
+      ease: "outExpo",
     });
     return () => {
       anim.revert();
@@ -53,7 +62,7 @@ function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
   }, [daily, reduced, weeks]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <div
         ref={ref}
         role="img"
@@ -66,9 +75,9 @@ function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
               key={d.day}
               data-heat=""
               title={`${format(parseISO(d.day), "EEE d MMM")} · ${d.seconds ? formatDuration(d.seconds) : "no focus"}`}
-              className="grid size-5 place-items-center text-sm leading-none hover:inset-frame"
+              className="grid size-5 place-items-center hover:inset-frame"
             >
-              {LEVELS[level(d.seconds)]?.glyph}
+              <Star level={level(d.seconds)} />
             </span>
           ) : (
             <span key={`pad-${i}`} aria-hidden className="size-5" />
@@ -76,9 +85,11 @@ function Heatmap({ daily }: { daily: FocusStatsDto["daily"] }) {
         )}
       </div>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" aria-label="Legend">
-        {LEVELS.map((l) => (
-          <li key={l.label} className="flex items-center gap-1.5">
-            <span className="text-fg">{l.glyph}</span>
+        {LEVELS.map((l, i) => (
+          <li key={l.label} className="flex items-center gap-2">
+            <span className="grid size-3 place-items-center">
+              <Star level={i} />
+            </span>
             {l.label}
           </li>
         ))}
@@ -91,16 +102,15 @@ function WeeklyBars({ weekly }: { weekly: FocusStatsDto["weekly"] }) {
   const ref = useRef<HTMLUListElement>(null);
   const reduced = useReducedMotion();
   const max = Math.max(1, ...weekly.map((w) => w.completed));
-  const WIDTH = 24;
 
   useEffect(() => {
     const el = ref.current;
     if (!el || reduced) return;
     const anim = animate(el.querySelectorAll("[data-bar]"), {
-      clipPath: ["inset(0 100% 0 0)", "inset(0 0% 0 0)"],
+      scaleX: [0, 1],
       delay: stagger(50),
-      duration: 480,
-      ease: "outQuad",
+      duration: 640,
+      ease: "outExpo",
     });
     return () => {
       anim.revert();
@@ -108,23 +118,24 @@ function WeeklyBars({ weekly }: { weekly: FocusStatsDto["weekly"] }) {
   }, [weekly, reduced]);
 
   return (
-    <ul ref={ref} className="flex flex-col gap-2" aria-label="Tasks completed per week">
-      {weekly.map((w) => {
-        const n = Math.round((w.completed / max) * WIDTH);
-        return (
-          <li
-            key={w.week}
-            className="grid grid-cols-[4ch_minmax(0,1fr)_3ch] items-center gap-3 text-xs"
-            title={`${w.week}: ${w.completed} completed`}
-          >
-            <span className="text-subtle">{w.week.replace(/^\d{4}-/, "").toLowerCase()}</span>
-            <span data-bar="" className="truncate tracking-tighter whitespace-pre">
-              {"█".repeat(n) || <span className="text-line">▏</span>}
-            </span>
-            <span className="text-right text-muted tabular-nums">{w.completed}</span>
-          </li>
-        );
-      })}
+    <ul ref={ref} className="flex flex-col gap-3" aria-label="Tasks completed per week">
+      {weekly.map((w) => (
+        <li
+          key={w.week}
+          className="grid grid-cols-[4ch_minmax(0,1fr)_3ch] items-center gap-3 text-xs"
+          title={`${w.week}: ${w.completed} completed`}
+        >
+          <span className="text-subtle">{w.week.replace(/^\d{4}-/, "").toLowerCase()}</span>
+          <span className="relative h-1.5 bg-line/40">
+            <span
+              data-bar=""
+              className="absolute inset-y-0 left-0 origin-left rounded-r-full bg-fg"
+              style={{ width: `${(w.completed / max) * 100}%` }}
+            />
+          </span>
+          <span className="text-right text-muted tabular-nums">{w.completed}</span>
+        </li>
+      ))}
     </ul>
   );
 }
@@ -138,7 +149,7 @@ export function StatsView() {
   return (
     <div className="flex flex-col">
       <PageHeader
-        path="~/stats"
+        eyebrow="telemetry"
         title="stats"
         description="focus time, streaks and throughput"
         actions={
@@ -156,8 +167,8 @@ export function StatsView() {
       />
 
       {stats.isPending ? (
-        <p className="text-sm text-muted">
-          <Spinner /> crunching numbers…
+        <p className="flex items-center gap-2 text-sm text-muted">
+          <Spinner /> charting your orbit…
         </p>
       ) : !stats.data ? (
         <p className="text-sm">! could not load stats</p>

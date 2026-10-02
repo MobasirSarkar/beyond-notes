@@ -2,15 +2,8 @@
 
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(useGSAP, ScrambleTextPlugin);
+gsap.registerPlugin(useGSAP, SplitText);
 
-export { gsap, useGSAP };
-
-/** Glyph sets used by scramble effects. */
-export const GLYPHS = {
-  ascii: "/\\|_-=+*#<>",
-  blocks: "░▒▓█",
-  lower: "abcdefghijklmnopqrstuvwxyz",
-} as const;
+export { gsap, SplitText, useGSAP };

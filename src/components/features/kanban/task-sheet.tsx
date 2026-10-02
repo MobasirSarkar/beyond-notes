@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { Timer, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -11,7 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Field } from "@/components/ui/field";
 import { Input, Textarea } from "@/components/ui/input";
+import { Icon } from "@/components/ui/icon";
 import { Modal } from "@/components/ui/modal";
+import { PriorityMark } from "@/components/ui/priority-mark";
 import { Progress } from "@/components/ui/progress";
 import { Rule } from "@/components/ui/rule";
 import { Segmented } from "@/components/ui/segmented";
@@ -23,7 +26,6 @@ import {
   useUpdateSubtask,
   useUpdateTask,
 } from "@/lib/api/mutations";
-import { PRIORITY_META } from "@/lib/constants/priority";
 import { focusTimer } from "@/lib/stores/focus-timer";
 import { LIMITS, PRIORITIES } from "@/lib/schemas/input";
 import { cn } from "@/lib/utils/cn";
@@ -36,7 +38,12 @@ import { LabelInput } from "./label-input";
 
 const PRIORITY_OPTIONS: readonly SegmentOption<Priority>[] = PRIORITIES.map((p) => ({
   value: p,
-  label: p === "none" ? "none" : `${PRIORITY_META[p].glyph} ${p}`,
+  label: (
+    <span className="inline-flex items-center gap-2">
+      {p === "none" ? null : <PriorityMark priority={p} />}
+      {p}
+    </span>
+  ),
 }));
 
 export function TaskSheet({ task, onClose }: { task: TaskDto | null; onClose: () => void }) {
@@ -172,7 +179,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
         {speech.interim ? <p className="text-sm text-muted">… {speech.interim}</p> : null}
         {speech.error ? <p className="text-sm">! {speech.error}</p> : null}
         {preview ? (
-          <div className="min-h-24 p-4 hairline">
+          <div className="min-h-24 rounded-card lift p-4">
             {description ? (
               <LazyMarkdown source={description} />
             ) : (
@@ -199,13 +206,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
           subtasks {task.subtasks.length > 0 ? `· ${doneCount}/${task.subtasks.length}` : ""}
         </Rule>
         {task.subtasks.length > 0 ? (
-          <Progress
-            value={doneCount}
-            max={task.subtasks.length}
-            width={24}
-            label="Subtask progress"
-            className="text-xs"
-          />
+          <Progress value={doneCount} max={task.subtasks.length} label="Subtask progress" />
         ) : null}
         <ul className="flex flex-col">
           {task.subtasks.map((s) => (
@@ -223,7 +224,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
                 onClick={() => delSub.mutate({ subtaskId: s.id })}
                 className="px-2 text-subtle opacity-0 group-hover:opacity-100 hover:text-fg focus-visible:opacity-100"
               >
-                ×
+                <Icon icon={X} className="size-3.5" />
               </button>
             </li>
           ))}
@@ -241,7 +242,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             value={subDraft}
             onChange={(e) => setSubDraft(e.target.value)}
             maxLength={LIMITS.subtaskTitle}
-            placeholder="+ add subtask"
+            placeholder="add a subtask…"
             aria-label="New subtask"
           />
         </form>
@@ -252,7 +253,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
           <span>created {format(new Date(task.createdAt), "d MMM yyyy")}</span>
           {task.focusSeconds > 0 ? <span>focused {formatDuration(task.focusSeconds)}</span> : null}
           {task.completedAt ? (
-            <span>✓ done {format(new Date(task.completedAt), "d MMM")}</span>
+            <span>completed {format(new Date(task.completedAt), "d MMM")}</span>
           ) : null}
         </p>
         <div className="flex flex-wrap justify-between gap-2">
@@ -261,7 +262,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             onClick={() => focusTimer.setTask(task.id)}
             className={buttonStyles({ variant: "solid" })}
           >
-            ◷ focus on this
+            <Icon icon={Timer} /> focus on this
           </Link>
           <ConfirmButton
             size="md"

@@ -1,22 +1,17 @@
-"use client";
+import { cn } from "@/lib/utils/cn";
 
-import { useEffect, useState } from "react";
-
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
-
-const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-
+/** A small moon orbiting a ring. Stops automatically under reduced motion (global CSS). */
 export function Spinner({ className, label = "Loading" }: { className?: string; label?: string }) {
-  const reduced = useReducedMotion();
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (reduced) return;
-    const id = window.setInterval(() => setI((n) => (n + 1) % FRAMES.length), 90);
-    return () => window.clearInterval(id);
-  }, [reduced]);
   return (
-    <span role="status" aria-label={label} className={className}>
-      {reduced ? "…" : FRAMES[i]}
+    <span
+      role="status"
+      aria-label={label}
+      className={cn("relative inline-block size-3.5 align-[-0.125em]", className)}
+    >
+      <span aria-hidden className="absolute inset-0 rounded-full hairline" />
+      <span aria-hidden className="absolute inset-0 animate-spin [animation-duration:900ms]">
+        <span className="absolute -top-0.5 left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-fg" />
+      </span>
     </span>
   );
 }

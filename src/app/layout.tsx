@@ -1,7 +1,8 @@
-import "@fontsource-variable/jetbrains-mono/wght.css";
 import "./globals.css";
 
+import { GeistMono } from "geist/font/mono";
 import { GeistPixelSquare } from "geist/font/pixel";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
@@ -37,7 +38,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Per-request CSP nonce generated in `src/proxy.ts`.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
-    <html lang="en" className={GeistPixelSquare.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Static constant (no user input): applies theme before first paint. */}
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: PREFS_BOOTSTRAP }} />
@@ -45,7 +50,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <a
           href="#main"
-          className="sr-only z-(--z-toast) bg-fg px-4 py-2 text-bg focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+          className="sr-only z-(--z-toast) rounded-full bg-fg px-4 py-2 text-bg focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
         >
           Skip to content
         </a>

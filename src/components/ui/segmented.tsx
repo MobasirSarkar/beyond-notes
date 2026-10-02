@@ -36,7 +36,10 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn("inline-flex max-w-full overflow-x-auto bg-bg hairline", className)}
+      className={cn(
+        "inline-flex max-w-full gap-0.5 overflow-x-auto rounded-full glass p-0.5 shadow-none",
+        className,
+      )}
     >
       {options.map((o) => {
         const selected = o.value === value;
@@ -54,9 +57,9 @@ export function Segmented<T extends string>({
               if (e.key === "ArrowLeft" || e.key === "ArrowUp") move(-1, e.currentTarget);
             }}
             className={cn(
-              "flex-1 px-3 whitespace-nowrap transition-colors duration-(--dur-1) disabled:cursor-not-allowed",
-              size === "sm" ? "h-7 text-xs" : "h-9 text-sm",
-              selected ? "bg-fg text-bg" : "text-muted hover:bg-surface hover:text-fg",
+              "flex flex-1 items-center justify-center rounded-full px-3 whitespace-nowrap transition-colors duration-(--dur-2) disabled:cursor-not-allowed",
+              size === "sm" ? "h-6 text-xs" : "h-8 text-sm",
+              selected ? "bg-fg text-bg" : "text-muted hover:bg-surface-2/60 hover:text-fg",
             )}
           >
             {o.label}

@@ -3,4 +3,4 @@
  * (browser chrome theme-color, the web manifest, generated icons). Keep them
  * in sync with the `--bg` tokens in `globals.css`.
  */
-export const CHROME_COLOR = { light: "#fafafa", dark: "#171717" } as const;
+export const CHROME_COLOR = { light: "#fafafa", dark: "#0a0a0a" } as const;

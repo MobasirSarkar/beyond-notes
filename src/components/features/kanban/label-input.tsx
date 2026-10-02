@@ -1,7 +1,9 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useState } from "react";
 
+import { Icon } from "@/components/ui/icon";
 import { labelsSchema } from "@/lib/schemas/input";
 
 type Props = {
@@ -29,17 +31,20 @@ export function LabelInput({ value, onChange, placeholder = "add tag", id }: Pro
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex min-h-9 flex-wrap items-center gap-1.5 bg-bg px-2 py-1 hairline focus-within:rule-strong">
+      <div className="flex min-h-9 flex-wrap items-center gap-1.5 rounded-control lift px-2 py-1 focus-within:rule-strong">
         {value.map((l) => (
-          <span key={l} className="flex h-6 items-center gap-1 bg-surface-2 px-1.5 text-xs">
+          <span
+            key={l}
+            className="flex h-6 items-center gap-1 rounded-full bg-surface-2 px-2 text-xs"
+          >
             #{l}
             <button
               type="button"
               aria-label={`Remove ${l}`}
-              className="text-subtle hover:text-fg"
+              className="flex items-center text-subtle hover:text-fg"
               onClick={() => onChange(value.filter((x) => x !== l))}
             >
-              ×
+              <Icon icon={X} className="size-3" />
             </button>
           </span>
         ))}

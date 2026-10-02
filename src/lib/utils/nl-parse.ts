@@ -3,7 +3,7 @@ import * as chrono from "chrono-node";
 import type { ParsedCapture, Priority } from "@/types/domain";
 
 const PRIORITY_RULES: readonly [RegExp, Priority][] = [
-  // `!` shorthands mirror the glyphs shown on cards: !! medium, !!! high, !!!! urgent.
+  // `!` shorthands: ! low, !! medium, !!! high, !!!! urgent (shown as signal bars on cards).
   [/\b(urgent(ly)?|asap|critical|p0)\b|!!!!/i, "urgent"],
   [/\b(high[ -]priority|important|p1)\b|!!!/i, "high"],
   [/\b(medium[ -]priority|normal priority|p2)\b|!!/i, "medium"],

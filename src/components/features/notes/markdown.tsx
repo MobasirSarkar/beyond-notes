@@ -18,7 +18,7 @@ const REHYPE = [rehypeSanitize];
 /** Safe Markdown: GFM, HTML sanitised by rehype-sanitize, hardened links. */
 export function Markdown({ source }: { source: string }) {
   return (
-    <div className="prose-ascii">
+    <div className="prose-beyond">
       <ReactMarkdown remarkPlugins={REMARK} rehypePlugins={REHYPE} components={COMPONENTS}>
         {source}
       </ReactMarkdown>

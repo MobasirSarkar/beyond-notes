@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import type { Route } from "next";
 import type { ReactNode } from "react";
 
@@ -14,12 +15,13 @@ export type UiState = {
   capture: CaptureState;
 };
 
-/** A "window" in the tmux-style status line. */
+/** A "window" in the floating dock (press its index to switch). */
 export type NavWindow = {
   index: number;
   href: Route;
   label: string;
   description: string;
+  icon: LucideIcon;
 };
 
 export type ButtonVariant = "solid" | "outline" | "ghost" | "danger";

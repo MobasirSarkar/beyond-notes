@@ -1,18 +1,20 @@
 "use client";
 
-import { formatDistanceToNowStrict } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
+import { FileText, Pin, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useDeferredValue, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { Segmented } from "@/components/ui/segmented";
 import { Spinner } from "@/components/ui/spinner";
 import { TagToggle } from "@/components/ui/tag";
+import { TimeAgo } from "@/components/ui/time-ago";
 import { useCreateNote, useUpdateNote } from "@/lib/api/mutations";
 import { useNotes } from "@/lib/api/queries";
 import { cn } from "@/lib/utils/cn";
@@ -46,14 +48,14 @@ export function NotesList() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        path="~/notes"
+        eyebrow="library"
         title="notes"
         description={
           notes.data ? `${list.length} ${scope} note${list.length === 1 ? "" : "s"}` : " "
         }
         actions={
           <Button variant="solid" onClick={newNote} disabled={create.isPending}>
-            + new note
+            <Icon icon={Plus} /> new note
           </Button>
         }
         className="mb-0"
@@ -117,10 +119,10 @@ export function NotesList() {
             : "Notes support Markdown, tags and dictation."}
         </EmptyState>
       ) : (
-        <ul className="bg-bg hairline [&>li+li]:rule-t">
+        <ul className="overflow-hidden rounded-panel glass [&>li+li]:rule-t">
           <li
             aria-hidden
-            className="hidden grid-cols-[2ch_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 bg-surface px-4 py-2 subheading md:grid"
+            className="hidden grid-cols-[1rem_minmax(0,16rem)_minmax(0,1fr)_8rem] gap-4 px-5 py-3 label md:grid"
           >
             <span />
             <span>name</span>
@@ -139,11 +141,9 @@ export function NotesList() {
               >
                 <Link
                   href={`/notes/${n.id}`}
-                  className="grid grid-cols-[2ch_minmax(0,1fr)] gap-x-4 gap-y-1 px-4 py-3 transition-colors duration-(--dur-1) hover:bg-surface md:grid-cols-[2ch_minmax(0,16rem)_minmax(0,1fr)_8rem] md:items-center"
+                  className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-4 gap-y-1 px-5 py-3.5 transition-colors duration-(--dur-1) hover:bg-surface-2/50 md:grid-cols-[1rem_minmax(0,16rem)_minmax(0,1fr)_8rem] md:items-center"
                 >
-                  <span aria-hidden className="text-subtle">
-                    {n.pinned ? "▲" : "¶"}
-                  </span>
+                  <Icon icon={n.pinned ? Pin : FileText} className="size-3.5 text-subtle" />
                   <span className="truncate text-sm font-medium">{n.title || "untitled"}</span>
                   <span className="col-start-2 truncate text-xs text-muted md:col-start-auto md:text-sm">
                     {n.tags.length > 0 ? (
@@ -154,7 +154,7 @@ export function NotesList() {
                     {plainExcerpt(n.excerpt) || "—"}
                   </span>
                   <span className="col-start-2 text-xs text-subtle md:col-start-auto md:text-right">
-                    {formatDistanceToNowStrict(new Date(n.updatedAt), { addSuffix: true })}
+                    <TimeAgo date={n.updatedAt} />
                   </span>
                 </Link>
                 <button

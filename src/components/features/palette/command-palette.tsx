@@ -1,10 +1,23 @@
 "use client";
 
 import { Command } from "cmdk";
+import {
+  FileText,
+  Keyboard,
+  LogOut,
+  Mic,
+  Plus,
+  Search,
+  Sparkles,
+  SquareCheck,
+  SquareKanban,
+  SunMoon,
+} from "lucide-react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useDeferredValue, useState, type ReactNode } from "react";
 
+import { Icon } from "@/components/ui/icon";
 import { Modal } from "@/components/ui/modal";
 import { Spinner } from "@/components/ui/spinner";
 import { useSignOut } from "@/hooks/use-sign-out";
@@ -20,9 +33,9 @@ import { Highlight } from "./highlight";
 const THEMES: readonly ThemePref[] = ["system", "light", "dark"];
 
 const ITEM =
-  "flex h-10 cursor-pointer items-center gap-3 px-4 text-sm data-[selected=true]:bg-fg data-[selected=true]:text-bg";
+  "mx-2 flex h-10 cursor-pointer items-center gap-3 rounded-control px-3 text-sm data-[selected=true]:bg-fg data-[selected=true]:text-bg";
 const GROUP =
-  "py-2 [&_[cmdk-group-heading]]:label [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:pb-1";
+  "py-2 [&_[cmdk-group-heading]]:label [&_[cmdk-group-heading]]:px-5 [&_[cmdk-group-heading]]:pb-1";
 
 function Hint({ children }: { children: ReactNode }) {
   return <span className="ml-auto text-xs opacity-60">{children}</span>;
@@ -53,10 +66,8 @@ export function CommandPalette() {
   return (
     <Modal open={open} onClose={close} title="Command palette" bare placement="top">
       <Command label="Command palette" shouldFilter={!hasResults} loop>
-        <div className="flex h-14 items-center gap-3 px-4 rule-b">
-          <span aria-hidden className="text-subtle">
-            &gt;
-          </span>
+        <div className="flex h-14 items-center gap-3 px-5 rule-b">
+          <Icon icon={Search} className="text-subtle" />
           <Command.Input
             data-autofocus
             value={query}
@@ -69,7 +80,7 @@ export function CommandPalette() {
         </div>
         <Command.List className="max-h-[55vh] overflow-y-auto pb-2">
           <Command.Empty className="px-4 py-8 text-center text-sm text-muted">
-            {query.trim().length >= 2 && !search.isFetching ? "no matches" : "…"}
+            {query.trim().length >= 2 && !search.isFetching ? "nothing out here" : "…"}
           </Command.Empty>
 
           {hasResults ? (
@@ -85,9 +96,10 @@ export function CommandPalette() {
                   }
                   className={`${ITEM} h-auto py-2`}
                 >
-                  <span aria-hidden className="w-4 opacity-60">
-                    {hit.kind === "note" ? "¶" : "□"}
-                  </span>
+                  <Icon
+                    icon={hit.kind === "note" ? FileText : SquareCheck}
+                    className="opacity-70"
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{hit.title || "untitled"}</span>
                     <span className="block truncate text-xs opacity-70">
@@ -102,15 +114,11 @@ export function CommandPalette() {
 
           <Command.Group heading="create" className={GROUP}>
             <Command.Item className={ITEM} onSelect={() => ui.openCapture()}>
-              <span aria-hidden className="w-4">
-                +
-              </span>{" "}
+              <Icon icon={Plus} />
               new task <Hint>t</Hint>
             </Command.Item>
             <Command.Item className={ITEM} onSelect={() => ui.openCapture({ voice: true })}>
-              <span aria-hidden className="w-4">
-                ◉
-              </span>{" "}
+              <Icon icon={Mic} />
               voice capture <Hint>v</Hint>
             </Command.Item>
             <Command.Item
@@ -122,9 +130,7 @@ export function CommandPalette() {
                 )
               }
             >
-              <span aria-hidden className="w-4">
-                ¶
-              </span>{" "}
+              <Icon icon={FileText} />
               new note <Hint>n</Hint>
             </Command.Item>
           </Command.Group>
@@ -132,9 +138,7 @@ export function CommandPalette() {
           <Command.Group heading="go to" className={GROUP}>
             {NAV_WINDOWS.map((w) => (
               <Command.Item key={w.href} className={ITEM} onSelect={() => go(w.href)}>
-                <span aria-hidden className="w-4 opacity-60">
-                  {w.index}
-                </span>{" "}
+                <Icon icon={w.icon} className="opacity-70" />
                 {w.label}
                 <Hint>{w.description}</Hint>
               </Command.Item>
@@ -146,9 +150,7 @@ export function CommandPalette() {
                 className={ITEM}
                 onSelect={() => go(`/boards/${b.id}`)}
               >
-                <span aria-hidden className="w-4 opacity-60">
-                  ▤
-                </span>{" "}
+                <Icon icon={SquareKanban} className="opacity-70" />
                 board / {b.name}
                 <Hint>{b.openTasks} open</Hint>
               </Command.Item>
@@ -162,27 +164,19 @@ export function CommandPalette() {
                 setPrefs({ theme: THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length] ?? "system" })
               }
             >
-              <span aria-hidden className="w-4">
-                ◐
-              </span>{" "}
+              <Icon icon={SunMoon} />
               cycle theme <Hint>{theme}</Hint>
             </Command.Item>
             <Command.Item className={ITEM} onSelect={() => setPrefs({ ambient: !ambient })}>
-              <span aria-hidden className="w-4">
-                ░
-              </span>{" "}
+              <Icon icon={Sparkles} />
               ambient background <Hint>{ambient ? "on" : "off"}</Hint>
             </Command.Item>
             <Command.Item className={ITEM} onSelect={ui.openHelp}>
-              <span aria-hidden className="w-4">
-                ?
-              </span>{" "}
+              <Icon icon={Keyboard} />
               keyboard shortcuts <Hint>?</Hint>
             </Command.Item>
             <Command.Item className={ITEM} onSelect={signOut}>
-              <span aria-hidden className="w-4">
-                ⏻
-              </span>{" "}
+              <Icon icon={LogOut} />
               sign out
             </Command.Item>
           </Command.Group>

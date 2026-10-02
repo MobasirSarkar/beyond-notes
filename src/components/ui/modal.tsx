@@ -78,7 +78,7 @@ export function Modal({
         if (e.target === e.currentTarget) onClose();
       }}
       className={cn(
-        "max-h-none max-w-none overflow-visible bg-transparent p-0 text-fg backdrop:bg-overlay",
+        "max-h-none max-w-none overflow-visible bg-transparent p-0 text-fg backdrop:bg-overlay backdrop:backdrop-blur-sm",
         PLACEMENT[placement],
       )}
     >
@@ -89,13 +89,13 @@ export function Modal({
             {...MOTION[placement]}
             transition={{ duration: placement === "sheet" ? 0.26 : 0.16, ease: [0.2, 0.8, 0.2, 1] }}
             className={cn(
-              "flex flex-col rule-strong bg-bg hairline",
-              placement === "sheet" ? "h-full" : "max-h-[80vh]",
+              "flex flex-col overflow-hidden glass-strong",
+              placement === "sheet" ? "h-full rounded-l-panel" : "max-h-[80vh] rounded-panel",
               className,
             )}
           >
             <div
-              className={cn("flex h-11 shrink-0 items-center gap-3 px-4 rule-b", bare && "sr-only")}
+              className={cn("flex h-12 shrink-0 items-center gap-3 px-5 rule-b", bare && "sr-only")}
             >
               <h2 id={titleId} className="truncate subheading">
                 {title}

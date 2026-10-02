@@ -34,6 +34,24 @@ export function makeQueryClient(): QueryClient {
   return qc;
 }
 
+/**
+ * Resolves once the page has loaded and the browser is idle — after React has
+ * hydrated the streamed server HTML. Restoring the cache sooner could put
+ * IndexedDB data into a boundary that hasn't hydrated yet, so its first client
+ * render would differ from the server's (a hydration mismatch).
+ */
+function afterHydration(): Promise<void> {
+  return new Promise((resolve) => {
+    const idle = () => {
+      if ("requestIdleCallback" in window)
+        window.requestIdleCallback(() => resolve(), { timeout: 1500 });
+      else setTimeout(resolve, 200);
+    };
+    if (document.readyState === "complete") idle();
+    else window.addEventListener("load", idle, { once: true });
+  });
+}
+
 /** IndexedDB persister, namespaced per user so accounts never share a cache. */
 export function makePersister(userId: string) {
   const store = queryCacheStore();
@@ -41,7 +59,11 @@ export function makePersister(userId: string) {
     key: `cache:${userId}`,
     throttleTime: 1000,
     storage: {
-      getItem: async (k) => (await get<string>(k, store)) ?? null,
+      // Only read on restore; see `afterHydration`.
+      getItem: async (k) => {
+        await afterHydration();
+        return (await get<string>(k, store)) ?? null;
+      },
       setItem: (k, v) => set(k, v, store),
       removeItem: (k) => del(k, store),
     },

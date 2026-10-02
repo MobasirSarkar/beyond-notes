@@ -9,11 +9,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Modal } from "@/components/ui/modal";
+import { PriorityMark } from "@/components/ui/priority-mark";
 import { Select } from "@/components/ui/input";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useCreateNote, useCreateTask } from "@/lib/api/mutations";
 import { useBoards } from "@/lib/api/queries";
-import { PRIORITY_META } from "@/lib/constants/priority";
 import { ui, useUi } from "@/lib/stores/ui";
 import { parseCapture } from "@/lib/utils/nl-parse";
 
@@ -22,7 +22,7 @@ import { Waveform } from "./waveform";
 
 function Token({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <span className="inline-flex h-7 items-center gap-2 px-2 text-xs hairline">
+    <span className="inline-flex h-7 items-center gap-2 rounded-full lift px-3 text-xs">
       <span className="text-subtle">{label}</span>
       {children}
     </span>
@@ -151,7 +151,7 @@ export function QuickCapture() {
           ) : null}
           {parsed.priority !== "none" ? (
             <Token label="priority">
-              {PRIORITY_META[parsed.priority].glyph} {parsed.priority}
+              <PriorityMark priority={parsed.priority} /> {parsed.priority}
             </Token>
           ) : null}
           {parsed.labels.map((l) => (

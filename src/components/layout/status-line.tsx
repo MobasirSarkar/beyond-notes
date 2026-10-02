@@ -1,9 +1,11 @@
 "use client";
 
 import { useIsMutating } from "@tanstack/react-query";
+import { Pause, Play, Sparkle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { useClock } from "@/hooks/use-clock";
 import { useOnline } from "@/hooks/use-online";
@@ -21,9 +23,9 @@ function FocusBadge() {
     <Link
       href="/focus"
       aria-label={`Focus timer ${running ? "running" : "paused"}, ${formatClock(remaining)} left`}
-      className="flex items-center gap-2 px-3 hover:bg-surface-2"
+      className="flex items-center gap-2 rounded-full px-3 font-mono hover:bg-surface-2"
     >
-      <span aria-hidden>{running ? "▶" : "❚❚"}</span>
+      <Icon icon={running ? Play : Pause} className="size-3" />
       <span className="hidden xl:inline">{FOCUS_LABEL[kind]}</span>
       <span className="tabular-nums">{formatClock(remaining)}</span>
     </Link>
@@ -41,7 +43,7 @@ function SyncState() {
         </>
       ) : (
         <>
-          <span aria-hidden>{online ? "●" : "○"}</span>
+          <span aria-hidden className={`size-1.5 rounded-full ${online ? "bg-fg" : "hairline"}`} />
           {online ? "online" : `offline${pending ? ` · ${pending} queued` : ""}`}
         </>
       )}
@@ -49,7 +51,7 @@ function SyncState() {
   );
 }
 
-/** tmux-style status line: session · numbered windows · timer · sync · clock. */
+/** Floating glass dock: home · windows (1–6) · focus timer · sync · clock. */
 export function StatusLine({ userName }: { userName: string }) {
   const pathname = usePathname();
   const current = activeWindow(pathname);
@@ -58,14 +60,18 @@ export function StatusLine({ userName }: { userName: string }) {
   return (
     <nav
       aria-label="Windows"
-      className="fixed inset-x-0 bottom-0 z-(--z-chrome) h-(--status-h) bg-surface pb-[env(safe-area-inset-bottom)] text-xs rule-t"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-(--z-chrome) flex justify-center px-3 pb-[max(var(--dock-gap),env(safe-area-inset-bottom))] text-xs"
     >
-      <div className="flex h-(--status-h) items-stretch">
-        <Link href="/" className="hidden items-center bg-fg px-3 heading text-bg sm:flex">
-          [beyond]
+      <div className="pointer-events-auto flex h-(--status-h) max-w-full items-stretch gap-1 rounded-full glass-strong p-1">
+        <Link
+          href="/"
+          aria-label="Beyond home"
+          className="hidden aspect-square items-center justify-center rounded-full bg-fg text-bg sm:flex"
+        >
+          <Icon icon={Sparkle} className="size-4" />
         </Link>
 
-        <ul className="flex min-w-0 flex-1 items-stretch overflow-x-auto">
+        <ul className="flex min-w-0 flex-1 items-stretch gap-0.5 overflow-x-auto">
           {NAV_WINDOWS.map((w) => {
             const active = current?.href === w.href;
             return (
@@ -75,26 +81,28 @@ export function StatusLine({ userName }: { userName: string }) {
                   aria-current={active ? "page" : undefined}
                   title={`${w.description} (${w.index})`}
                   className={cn(
-                    "flex w-full items-center justify-center gap-1 px-2 whitespace-nowrap transition-colors duration-(--dur-1) sm:px-3",
-                    active ? "bg-surface-2 font-bold text-fg" : "text-muted hover:text-fg",
+                    "flex w-full min-w-11 items-center justify-center gap-2 rounded-full px-3 whitespace-nowrap transition-colors duration-(--dur-2) sm:px-3.5",
+                    active
+                      ? "bg-surface-2 font-medium text-fg shadow-[inset_0_var(--bw)_0_var(--highlight)]"
+                      : "text-muted hover:text-fg",
                   )}
                 >
-                  <span className="hidden text-subtle sm:inline">{w.index}:</span>
-                  {w.label}
-                  <span aria-hidden className="hidden w-[1ch] sm:inline">
-                    {active ? "*" : ""}
-                  </span>
+                  <Icon icon={w.icon} className="size-4 sm:size-3.5" />
+                  <span className="sr-only sm:not-sr-only">{w.label}</span>
                 </Link>
               </li>
             );
           })}
         </ul>
 
-        <div className="hidden items-stretch text-muted rule-l md:flex">
+        <div className="hidden items-stretch text-muted md:flex">
+          <span aria-hidden className="my-2 w-(--bw) bg-line" />
           <FocusBadge />
           <SyncState />
           <span className="hidden items-center px-3 lg:flex">@{userName}</span>
-          <span className="flex items-center bg-surface-2 px-3 text-fg tabular-nums">{clock}</span>
+          <span className="flex items-center rounded-full bg-surface-2 px-3.5 font-mono text-fg tabular-nums">
+            {clock}
+          </span>
         </div>
       </div>
     </nav>

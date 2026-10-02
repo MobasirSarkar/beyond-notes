@@ -8,7 +8,7 @@ import type { MenuItemDef } from "@/types/ui";
 
 type Props = {
   label: ReactNode;
-  /** Accessible name for the trigger when `label` is a glyph. */
+  /** Accessible name for the trigger when `label` is an icon. */
   ariaLabel: string;
   items: readonly (MenuItemDef | false | null | undefined)[];
   align?: "left" | "right";
@@ -59,7 +59,7 @@ export function Menu({ label, ariaLabel, items, align = "right", className }: Pr
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((o) => !o)}
-        className="flex size-7 items-center justify-center text-muted hover:bg-surface hover:text-fg"
+        className="flex size-7 items-center justify-center rounded-full text-muted hover:bg-surface-2/60 hover:text-fg"
       >
         {label}
       </button>
@@ -73,7 +73,7 @@ export function Menu({ label, ariaLabel, items, align = "right", className }: Pr
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12 }}
             className={cn(
-              "absolute top-full z-(--z-overlay) mt-1 flex min-w-48 flex-col rule-strong bg-bg py-1 hairline",
+              "absolute top-full z-(--z-overlay) mt-2 flex min-w-48 flex-col rounded-card glass-strong p-1",
               align === "right" ? "right-0" : "left-0",
             )}
           >
@@ -88,7 +88,7 @@ export function Menu({ label, ariaLabel, items, align = "right", className }: Pr
                   item.onSelect();
                 }}
                 className={cn(
-                  "flex h-8 items-center px-3 text-left text-sm hover:bg-fg hover:text-bg focus-visible:bg-fg focus-visible:text-bg focus-visible:outline-none disabled:opacity-40",
+                  "flex h-8 items-center rounded-lg px-3 text-left text-sm hover:bg-fg hover:text-bg focus-visible:bg-fg focus-visible:text-bg focus-visible:outline-none disabled:opacity-40",
                   item.danger && "text-muted",
                 )}
               >

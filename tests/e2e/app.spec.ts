@@ -62,7 +62,7 @@ test.describe("signed-in flows", () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
-    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("pageerror", (e) => errors.push(`${page.url()}: ${e.message}`));
   });
   test.afterAll(async () => {
     await page.close();
@@ -70,7 +70,7 @@ test.describe("signed-in flows", () => {
 
   test("landing → sign up lands on a seeded board", async () => {
     await page.goto("/");
-    await expect(page.getByRole("img", { name: "Beyond" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "beyond" })).toBeVisible();
     await shot(page, "01-landing");
     await page.getByRole("link", { name: /start for free/ }).click();
     await expect(page).toHaveURL(/\/sign-up/);
@@ -87,7 +87,7 @@ test.describe("signed-in flows", () => {
 
   test("adds a task inline with natural-language parsing", async () => {
     const todo = page.getByRole("region", { name: "To Do column" });
-    await todo.getByRole("button", { name: "+ add task" }).click();
+    await todo.getByRole("button", { name: "add task" }).click();
     const input = todo.getByRole("textbox", { name: "New task in To Do" });
     await input.fill("Ship pixel release tomorrow !!! #launch");
     await input.press("Enter");
@@ -95,7 +95,7 @@ test.describe("signed-in flows", () => {
     await expect(card).toBeVisible();
     await expect(card).toContainText("#launch");
     await expect(card).toContainText("tomorrow");
-    await expect(card).toContainText("!!!");
+    await expect(card.locator('[aria-label="high priority"]')).toBeVisible();
     await input.press("Escape");
     await shot(page, "02-board");
   });
@@ -170,7 +170,7 @@ test.describe("signed-in flows", () => {
 
   test("writes a note that autosaves", async () => {
     await page.goto("/notes");
-    await page.getByRole("button", { name: "+ new note" }).click();
+    await page.getByRole("button", { name: "new note" }).click();
     await expect(page).toHaveURL(/\/notes\/[0-9a-f-]{36}/);
     await page.getByLabel("Note title").fill("e2e note");
     await page.getByLabel("Note content (Markdown)").fill("# Hello\n\n- [x] pixel\n- [ ] perfect");
@@ -205,7 +205,7 @@ test.describe("signed-in flows", () => {
     expect(data.format).toBe("beyond-notes/v1");
     expect(data.notes.length).toBeGreaterThanOrEqual(2);
     await page.goto("/settings");
-    // The shared ASCII backdrop renders behind the app and can be switched off.
+    // The shared galaxy backdrop renders behind the app and can be switched off.
     await expect(page.locator("canvas[aria-hidden]")).toHaveCount(1);
     await page.getByRole("checkbox", { name: "on" }).first().click();
     await expect(page.locator("canvas[aria-hidden]")).toHaveCount(0);

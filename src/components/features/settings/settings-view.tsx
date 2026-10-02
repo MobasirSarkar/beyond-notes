@@ -41,7 +41,7 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
   return (
     <div className="flex flex-col">
       <PageHeader
-        path="~/settings"
+        eyebrow="preferences"
         title="settings"
         description="preferences are stored on this device"
       />
@@ -49,7 +49,10 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
       <div className="flex max-w-3xl flex-col gap-6">
         <Frame title="appearance">
           <div className="flex flex-col [&>*+*]:rule-t">
-            <SettingRow title="Theme" description="Monochrome light or dark, or follow the system.">
+            <SettingRow
+              title="Theme"
+              description="Deep-space dark or star-chart light, or follow the system."
+            >
               <Segmented
                 label="Theme"
                 size="sm"
@@ -72,16 +75,13 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
             </SettingRow>
             <SettingRow
               title="Ambient background"
-              description="The animated ASCII field behind the app. Static when motion is reduced."
+              description="The live galaxy behind the app. Rendered once, without motion, when motion is reduced."
             >
               <Checkbox checked={ambient} onChange={(a) => setPrefs({ ambient: a })}>
                 {ambient ? "on" : "off"}
               </Checkbox>
             </SettingRow>
-            <SettingRow
-              title="Sound"
-              description="Short 8-bit blips for drags, completions and timers."
-            >
+            <SettingRow title="Sound" description="Soft chimes for drags, completions and timers.">
               <Checkbox checked={sound} onChange={(s) => setPrefs({ sound: s })}>
                 {sound ? "on" : "off"}
               </Checkbox>

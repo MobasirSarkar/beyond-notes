@@ -1,14 +1,15 @@
 "use client";
 
+import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { Frame } from "@/components/ui/frame";
+import { Icon } from "@/components/ui/icon";
 import { Input, Select } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
-import { Progress } from "@/components/ui/progress";
 import { Segmented } from "@/components/ui/segmented";
 import { useOpenTasks } from "@/lib/api/queries";
 import { FOCUS_KINDS } from "@/lib/schemas/input";
@@ -23,10 +24,12 @@ import {
 } from "@/lib/stores/focus-timer";
 import { setPrefs, usePrefs } from "@/lib/stores/prefs";
 import { playBeep } from "@/lib/browser/sound";
+import { cn } from "@/lib/utils/cn";
 import type { FocusKind } from "@/types/domain";
 import type { Prefs, TimerLengthKey } from "@/types/prefs";
 
 import { BigClock } from "./big-clock";
+import { OrbitDial } from "./orbit-dial";
 
 const KIND_OPTIONS = FOCUS_KINDS.map((k) => ({ value: k, label: FOCUS_LABEL[k] }));
 const LENGTHS: readonly { key: TimerLengthKey; label: string; max: number }[] = [
@@ -74,7 +77,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
   return (
     <div className="flex flex-col">
       <PageHeader
-        path="~/focus"
+        eyebrow="deep work"
         title="focus"
         description={
           task
@@ -90,42 +93,46 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
           options={KIND_OPTIONS}
           onChange={(k) => focusTimer.switchTo(k)}
           disabled={running}
-          className="w-full"
+          className="mx-auto w-full max-w-md"
         />
 
-        <section
-          aria-label="Timer"
-          className="flex flex-col items-center gap-8 bg-bg px-4 py-12 hairline sm:py-16"
-        >
-          <BigClock
-            value={clock}
-            blink={running}
-            className="text-[clamp(0.375rem,1.6vw,0.875rem)]"
-          />
-          <Progress
-            value={total - remaining}
-            max={total}
-            width={32}
+        <section aria-label="Timer" className="flex flex-col items-center gap-8 py-6 sm:py-10">
+          <OrbitDial
+            progress={total > 0 ? (total - remaining) / total : 0}
+            running={running}
             label="Session progress"
-            className="text-xs sm:text-sm"
-          />
-          <p
-            className="text-xs text-muted"
-            aria-label={`${cycle} of ${LONG_BREAK_INTERVAL} focus blocks before a long break`}
+            className="w-full max-w-[min(100%,24rem,52dvh)]"
           >
-            {Array.from({ length: LONG_BREAK_INTERVAL }, (_, i) => (i < cycle ? "■" : "□")).join(
-              " ",
-            )}
-            <span className="ml-3 text-subtle">{completed} completed</span>
-          </p>
+            <span className="subheading text-muted">{FOCUS_LABEL[kind]}</span>
+            <BigClock
+              value={clock}
+              blink={running}
+              className="text-[clamp(3rem,min(13vw,9dvh),5.5rem)]"
+            />
+            <span
+              className="flex items-center gap-1.5"
+              aria-label={`${cycle} of ${LONG_BREAK_INTERVAL} focus blocks before a long break`}
+            >
+              {Array.from({ length: LONG_BREAK_INTERVAL }, (_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "size-1.5 rounded-full",
+                    i < cycle ? "bg-fg" : "rule-strong opacity-40 hairline",
+                  )}
+                />
+              ))}
+            </span>
+            <span className="text-xs text-subtle">{completed} completed</span>
+          </OrbitDial>
           <div className="flex flex-wrap justify-center gap-2">
             {running ? (
               <Button size="lg" variant="solid" onClick={focusTimer.pause} className="min-w-36">
-                ❚❚ pause
+                <Icon icon={Pause} /> pause
               </Button>
             ) : (
               <Button size="lg" variant="solid" onClick={start} className="min-w-36">
-                ▶ {started ? "resume" : "start"}
+                <Icon icon={Play} /> {started ? "resume" : "start"}
               </Button>
             )}
             <Button
@@ -133,10 +140,10 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
               onClick={focusTimer.reset}
               title="Reset (logs focus of 1 min or more)"
             >
-              ↺ reset
+              <Icon icon={RotateCcw} /> reset
             </Button>
             <Button size="lg" variant="ghost" onClick={focusTimer.skip}>
-              skip →
+              skip <Icon icon={SkipForward} />
             </Button>
           </div>
         </section>
@@ -184,7 +191,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
                 ))}
               </div>
               <Checkbox checked={prefs.sound} onChange={(sound) => setPrefs({ sound })}>
-                8-bit sounds
+                chime sounds
               </Checkbox>
             </div>
           </Frame>

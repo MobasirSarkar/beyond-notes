@@ -3,7 +3,7 @@ import type { InputHTMLAttributes, Ref, SelectHTMLAttributes, TextareaHTMLAttrib
 import { cn } from "@/lib/utils/cn";
 
 const FIELD =
-  "hairline w-full bg-bg px-3 text-sm text-fg outline-none transition-colors duration-(--dur-1) placeholder:text-subtle hover:rule-strong focus:rule-strong focus-visible:outline-none disabled:opacity-50";
+  "lift w-full rounded-control px-3 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-(--dur-2) placeholder:text-subtle hover:rule-strong focus:rule-strong focus:shadow-glow focus-visible:outline-none disabled:opacity-50";
 
 export function Input({
   className,

@@ -67,8 +67,8 @@ export function AuthForm({ mode, next, github }: Props) {
   }
 
   return (
-    <div className="flex flex-col rule-strong bg-bg hairline">
-      <header className="flex flex-col gap-1 px-6 py-5 rule-b sm:px-8">
+    <div className="flex flex-col overflow-hidden rounded-panel glass-strong">
+      <header className="flex flex-col gap-1 px-6 py-6 rule-b sm:px-8">
         <p className="label">{isSignUp ? "new session" : "resume session"}</p>
         <h1 className="heading text-xl">{isSignUp ? "Create your account" : "Welcome back"}</h1>
       </header>
@@ -113,7 +113,7 @@ export function AuthForm({ mode, next, github }: Props) {
               animate={{ opacity: 1, x: [0, -4, 4, -2, 2, 0] }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-surface px-3 py-2 text-sm edge-l"
+              className="rounded-control rule-strong lift px-3 py-2 text-sm"
             >
               {error}
             </motion.p>

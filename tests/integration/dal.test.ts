@@ -79,7 +79,7 @@ describe.skipIf(!hasDb)("data access layer (Postgres)", () => {
     const [summary] = await mod.boards.listBoards(A);
     expect(summary?.openTasks).toBe(2);
     const notes = await mod.notes.listNotes(A, {});
-    expect(notes[0]?.title).toBe("README.txt");
+    expect(notes[0]?.title).toBe("README");
   });
 
   it("isolates boards between users", async () => {

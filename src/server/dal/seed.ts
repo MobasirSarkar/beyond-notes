@@ -5,15 +5,9 @@ import { keysAfter } from "@/lib/utils/position";
 import { db } from "../db";
 import { board, boardColumn, note, task } from "../db/schema";
 
-const WELCOME = `# Welcome to Beyond Notes
+const WELCOME = `# Welcome to Beyond
 
-\`\`\`
- ____  _____ __   __ ___  _   _ ____
-| __ )| ____|\\ \\ / // _ \\| \\ | |  _ \\
-|  _ \\|  _|   \\ V /| | | |  \\| | | | |
-| |_) | |___   | | | |_| | |\\  | |_| |
-|____/|_____|  |_|  \\___/|_| \\_|____/
-\`\`\`
+> Plan on boards, think in notes, and disappear into focus.
 
 A few things to try:
 
@@ -31,7 +25,7 @@ export async function seedWorkspace(userId: string): Promise<void> {
   await db.transaction(async (tx) => {
     const [b] = await tx
       .insert(board)
-      .values({ userId, name: "Main Quest", position: keysAfter(null, 1)[0] ?? "a0" })
+      .values({ userId, name: "Launchpad", position: keysAfter(null, 1)[0] ?? "a0" })
       .returning({ id: board.id });
     if (!b) return;
 
@@ -60,7 +54,7 @@ export async function seedWorkspace(userId: string): Promise<void> {
           userId,
           boardId: b.id,
           columnId: todo.id,
-          title: "Drag me to Doing →",
+          title: "Drag me to Doing",
           description:
             "Cards can be dragged with the mouse, touch or keyboard (space to lift, arrows to move).",
           priority: "medium",
@@ -81,7 +75,7 @@ export async function seedWorkspace(userId: string): Promise<void> {
 
     await tx.insert(note).values({
       userId,
-      title: "README.txt",
+      title: "README",
       content: WELCOME,
       tags: ["welcome"],
       pinned: true,

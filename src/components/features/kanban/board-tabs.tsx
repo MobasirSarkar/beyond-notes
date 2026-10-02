@@ -1,9 +1,11 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { useCreateBoard } from "@/lib/api/mutations";
 import { useBoards } from "@/lib/api/queries";
@@ -68,9 +70,9 @@ export function BoardTabs({ activeId }: { activeId: string }) {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="flex h-10 shrink-0 items-center px-3 text-sm text-subtle hover:text-fg"
+          className="flex h-10 shrink-0 items-center gap-2 px-3 text-sm text-subtle hover:text-fg"
         >
-          + new board
+          <Icon icon={Plus} className="size-3.5" /> new board
         </button>
       )}
     </nav>

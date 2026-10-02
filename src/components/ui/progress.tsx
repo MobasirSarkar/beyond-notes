@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils/cn";
 
-type Props = { value: number; max: number; width?: number; className?: string; label?: string };
+type Props = { value: number; max: number; className?: string; label?: string };
 
-/** ASCII progress bar `■■■■□□□□` that stays crisp at any zoom level. */
-export function Progress({ value, max, width = 10, className, label }: Props) {
+/** Hairline progress bar. */
+export function Progress({ value, max, className, label }: Props) {
   const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
-  const filled = Math.round(ratio * width);
   return (
     <span
       role="progressbar"
@@ -13,10 +12,12 @@ export function Progress({ value, max, width = 10, className, label }: Props) {
       aria-valuemax={max}
       aria-valuenow={value}
       aria-label={label}
-      className={cn("tracking-tighter whitespace-pre", className)}
+      className={cn("relative block h-(--bw-strong) w-full overflow-hidden bg-line", className)}
     >
-      <span className="text-fg">{"■".repeat(filled)}</span>
-      <span className="text-line">{"■".repeat(width - filled)}</span>
+      <span
+        className="absolute inset-y-0 left-0 bg-fg transition-[width] duration-(--dur-3) ease-out"
+        style={{ width: `${ratio * 100}%` }}
+      />
     </span>
   );
 }

@@ -5,6 +5,9 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { AnimatePresence } from "motion/react";
 import { useState, type FormEvent } from "react";
 
+import { Check, MoreHorizontal, Plus } from "lucide-react";
+
+import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Menu } from "@/components/ui/menu";
 import {
@@ -82,17 +85,22 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
     <section
       aria-label={`${column.name} column`}
       className={cn(
-        "flex max-h-[calc(100dvh-var(--header-h)-var(--status-h)-14rem)] min-h-48 w-(--column-w) shrink-0 snap-start flex-col bg-surface transition-colors duration-(--dur-1) hairline",
+        "flex max-h-[calc(100dvh-var(--header-h)-var(--dock-space)-14rem)] min-h-48 w-(--column-w) shrink-0 snap-start flex-col overflow-hidden rounded-panel glass transition-colors duration-(--dur-2)",
         isOver && "rule-strong",
       )}
     >
-      <header className="flex h-11 items-center gap-2 pr-1 pl-3 rule-b">
+      <header className="flex h-12 items-center gap-2 pr-2 pl-4">
         <h2 className="min-w-0 flex-1 truncate subheading">
-          {column.isDone ? <span className="text-subtle">✓ </span> : null}
+          {column.isDone ? (
+            <Icon icon={Check} className="mr-1.5 inline size-3 align-[-0.1em] text-subtle" />
+          ) : null}
           {column.name}
         </h2>
         <span
-          className={cn("text-xs tabular-nums", overLimit ? "bg-fg px-1 text-bg" : "text-subtle")}
+          className={cn(
+            "rounded-full px-2 py-0.5 font-mono text-2xs tabular-nums",
+            overLimit ? "bg-fg text-bg" : "bg-surface-2/60 text-muted",
+          )}
           title={
             column.wipLimit
               ? `${tasks.length} of ${column.wipLimit} (WIP limit)`
@@ -103,7 +111,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
           {column.wipLimit ? `/${String(column.wipLimit).padStart(2, "0")}` : ""}
         </span>
         <Menu
-          label="⋯"
+          label={<Icon icon={MoreHorizontal} />}
           ariaLabel={`${column.name} column options`}
           items={[
             { id: "rename", label: "rename", onSelect: () => setEditing("name") },
@@ -115,13 +123,13 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
             },
             {
               id: "left",
-              label: "← move left",
+              label: "move left",
               disabled: isFirst,
               onSelect: () => moveColumn.mutate({ columnId: column.id, direction: "left" }),
             },
             {
               id: "right",
-              label: "move right →",
+              label: "move right",
               disabled: isLast,
               onSelect: () => moveColumn.mutate({ columnId: column.id, direction: "right" }),
             },
@@ -168,7 +176,7 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
             ))}
           </AnimatePresence>
           {tasks.length === 0 ? (
-            <li className="pointer-events-none grid flex-1 place-items-center rule-dashed py-8 text-xs text-subtle hairline">
+            <li className="pointer-events-none grid flex-1 place-items-center rounded-card rule-dashed py-8 text-xs text-subtle hairline">
               drop here
             </li>
           ) : null}
@@ -193,9 +201,9 @@ export function KanbanColumn({ boardId, column, tasks, isFirst, isLast, onOpenTa
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="flex h-8 w-full items-center px-2 text-left text-xs text-muted hover:bg-surface-2 hover:text-fg"
+            className="flex h-9 w-full items-center gap-2 rounded-card px-3 text-left text-xs text-muted transition-colors duration-(--dur-1) hover:bg-surface-2/60 hover:text-fg"
           >
-            + add task
+            <Icon icon={Plus} className="size-3.5" /> add task
           </button>
         )}
       </footer>

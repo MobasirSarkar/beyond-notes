@@ -21,7 +21,7 @@ import { getPrefs } from "@/lib/stores/prefs";
 import type { BoardDto, TaskDto } from "@/types/dto";
 import type { ColumnItems } from "@/types/kanban";
 
-import { asciiBurst } from "./burst";
+import { starBurst } from "./burst";
 import { kanbanKeyboardCoordinates } from "./keyboard-coordinates";
 
 const findContainer = (id: UniqueIdentifier, source: ColumnItems): string | undefined => {
@@ -114,7 +114,7 @@ export function useBoardDnd(
     const source = board.columns.find((c) => c.id === original?.columnId);
     if (target?.isDone && !source?.isDone) {
       const rect = active.rect.current.translated;
-      if (rect) asciiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, reduced);
+      if (rect) starBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, reduced);
       if (getPrefs().sound) playBeep("done");
     }
     moveTask.mutate({ taskId, columnId: container, afterTaskId, beforeTaskId });

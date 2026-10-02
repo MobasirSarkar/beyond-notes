@@ -41,7 +41,7 @@ export function InstallPrompt() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 16 }}
-          className="fixed right-4 bottom-[calc(var(--status-h)+1rem)] z-(--z-toast) flex max-w-sm items-center gap-3 rule-strong bg-bg p-4 hairline"
+          className="fixed right-4 bottom-[calc(var(--dock-space)+0.5rem)] z-(--z-toast) flex max-w-sm items-center gap-3 rounded-card glass-strong p-4"
         >
           <p className="flex-1 text-sm">Install Beyond for offline use and reminders.</p>
           <Button

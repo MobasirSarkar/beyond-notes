@@ -1,6 +1,6 @@
 "use client";
 
-import { formatDistanceToNowStrict } from "date-fns";
+import { ArrowLeft, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
@@ -9,10 +9,12 @@ import { MicButton } from "@/components/features/voice/mic-button";
 import { Waveform } from "@/components/features/voice/waveform";
 import { LabelInput } from "@/components/features/kanban/label-input";
 import { Field } from "@/components/ui/field";
+import { Icon } from "@/components/ui/icon";
 import { Select } from "@/components/ui/input";
 import { Menu } from "@/components/ui/menu";
 import { Segmented } from "@/components/ui/segmented";
 import { Spinner } from "@/components/ui/spinner";
+import { TimeAgo } from "@/components/ui/time-ago";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useDeleteNote, useUpdateNote } from "@/lib/api/mutations";
 import { useNote, useOpenTasks } from "@/lib/api/queries";
@@ -63,8 +65,11 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
   return (
     <article className="flex flex-col gap-6">
       <nav className="flex flex-wrap items-center gap-3" aria-label="Note toolbar">
-        <Link href="/notes" className="text-sm text-muted hover:text-fg">
-          ← notes
+        <Link
+          href="/notes"
+          className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg"
+        >
+          <Icon icon={ArrowLeft} className="size-3.5" /> notes
         </Link>
         <span className="ml-auto flex items-center gap-2 text-xs text-subtle" aria-live="polite">
           {saving ? (
@@ -72,7 +77,9 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
               <Spinner label="Saving" /> saving
             </>
           ) : (
-            `saved ${formatDistanceToNowStrict(new Date(note.updatedAt), { addSuffix: true })}`
+            <>
+              saved <TimeAgo date={note.updatedAt} />
+            </>
           )}
         </span>
         <MicButton
@@ -93,7 +100,7 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           ]}
         />
         <Menu
-          label="⋯"
+          label={<Icon icon={MoreHorizontal} />}
           ariaLabel="Note options"
           items={[
             {
@@ -175,12 +182,12 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           spellCheck
           placeholder={"# start writing\n\n- markdown supported\n- [ ] checklists too"}
           aria-label="Note content (Markdown)"
-          className="min-h-[60vh] resize-y bg-bg p-5 text-sm leading-relaxed outline-none hairline placeholder:text-subtle focus:rule-strong"
+          className="min-h-[60vh] resize-y rounded-panel glass p-6 font-mono text-sm leading-relaxed outline-none placeholder:text-subtle focus:rule-strong"
         />
         {view !== "write" ? (
           <section
             aria-label="Preview"
-            className="min-h-[60vh] overflow-x-auto bg-surface p-5 hairline sm:p-8"
+            className="min-h-[60vh] overflow-x-auto rounded-panel glass p-6 sm:p-8"
           >
             {content.trim() ? (
               <LazyMarkdown source={content} />

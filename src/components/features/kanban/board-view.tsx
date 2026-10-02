@@ -87,7 +87,7 @@ export function BoardView({ initial }: { initial: BoardDto }) {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        path="~/boards"
+        eyebrow="board"
         title={board.name}
         description={`${board.columns.length} columns · ${openCount} open · ${board.tasks.length - openCount} done`}
         actions={
@@ -167,7 +167,7 @@ export function BoardView({ initial }: { initial: BoardDto }) {
             <Input
               name="name"
               maxLength={40}
-              placeholder="+ new column"
+              placeholder="new column…"
               aria-label="New column name"
             />
           </form>

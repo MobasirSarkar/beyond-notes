@@ -1,17 +1,9 @@
-# BEYOND_NOTES
+# Beyond
 
-```
-██████╗ ███████╗██╗   ██╗ ██████╗ ███╗   ██╗██████╗
-██╔══██╗██╔════╝╚██╗ ██╔╝██╔═══██╗████╗  ██║██╔══██╗
-██████╔╝█████╗   ╚████╔╝ ██║   ██║██╔██╗ ██║██║  ██║
-██╔══██╗██╔══╝    ╚██╔╝  ██║   ██║██║╚██╗██║██║  ██║
-██████╔╝███████╗   ██║   ╚██████╔╝██║ ╚████║██████╔╝
-╚═════╝ ╚══════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═════╝  NOTES
-```
-
-A monochrome, minimalist ASCII-styled, offline-capable **task & notes manager PWA**: kanban boards, Markdown notes,
-voice capture with natural-language parsing, calendar + push reminders, a focus timer with stats,
-a command palette and keyboard-first navigation — animated with **anime.js**, **GSAP** and **Motion**.
+A calm, offline-capable **task & notes workspace** that floats over a live, procedurally generated
+spiral galaxy. Kanban boards, Markdown notes, voice capture with natural-language parsing, calendar +
+push reminders, a focus timer with stats, a command palette and keyboard-first navigation — animated
+with **anime.js**, **GSAP** and **Motion**, rendered in monochrome with frosted-glass panels.
 
 ## Features
 
@@ -20,13 +12,13 @@ a command palette and keyboard-first navigation — animated with **anime.js**, 
 | **Kanban**    | Multiple boards, columns with WIP limits and "done" semantics, drag & drop with mouse, touch **and keyboard** (Space to lift, arrows to move), labels, priorities, subtasks, due dates, filters, optimistic updates |
 | **Notes**     | Markdown with live split preview (GFM, sanitised), autosave, tags, pinning, archive, link to a task, Postgres full-text search                                                                                      |
 | **Voice**     | Web Speech API dictation into notes/descriptions; voice quick-capture parses _"remind me to fix login tomorrow 5pm urgent #auth"_ into title, due date, reminder, priority and tags                                 |
-| **Calendar**  | ASCII month grid, drag tasks between days to reschedule, per-day quick add                                                                                                                                          |
+| **Calendar**  | Month grid, drag tasks between days to reschedule, per-day quick add                                                                                                                                                |
 | **Reminders** | In-app toasts while open + **Web Push** (VAPID) when closed, via an idempotent cron endpoint                                                                                                                        |
-| **Focus**     | Pomodoro timer with block-pixel clock, task attribution, survives reloads, 8-bit sounds, notifications                                                                                                              |
-| **Stats**     | Focus heatmap (12 weeks), completed-per-week chart, streaks, top tasks, table view                                                                                                                                  |
+| **Focus**     | Pomodoro timer on an orbital dial with Geist Pixel digits, task attribution, survives reloads, soft chimes, notifications                                                                                           |
+| **Stats**     | Focus "star chart" heatmap (12 weeks), completed-per-week chart, streaks, top tasks, table view                                                                                                                     |
 | **Palette**   | `⌘K` command palette with full-text search across tasks & notes, actions and navigation; `?` shows all shortcuts                                                                                                    |
 | **PWA**       | Installable, service worker (Serwist), offline fallback, IndexedDB-persisted query cache, **offline mutation queue** replayed on reconnect                                                                          |
-| **Themes**    | Monochrome light / dark (or follow the OS); full reduced-motion support covering GSAP, anime.js and Motion                                                                                                          |
+| **Themes**    | Deep-space dark / star-chart light (or follow the OS); full reduced-motion support covering WebGL, GSAP, anime.js and Motion                                                                                        |
 
 ## Stack
 
@@ -38,8 +30,10 @@ a command palette and keyboard-first navigation — animated with **anime.js**, 
 - **better-auth** (email/password, optional GitHub OAuth, DB sessions, DB-backed rate limiting)
 - **next-safe-action** + **Zod 4** for typed, validated server actions; Zod DTOs validate API responses on the client too
 - **TanStack Query** (optimistic updates, IndexedDB persistence, resumable offline mutations)
-- **Animation**: GSAP (ScrambleText decode effects, `useGSAP`), anime.js 4 (ASCII plasma field, logo grid
-  stagger, waveform, flip-clock digits, chart reveals, confetti), Motion (layout/presence, drawers, route wipes)
+- **Rendering & animation**: a hand-written **WebGL** galaxy (GLSL point sprites, GPU rotation, dust
+  absorption pass); anime.js 4 (galaxy intro + frame loop, clock digits, waveform, chart reveals, star
+  bursts, calendar stagger); GSAP (`SplitText` heading reveals, `useGSAP`); Motion (layout/presence,
+  drawers, sheets)
 - **dnd-kit**, **cmdk**, **chrono-node**, **react-markdown + rehype-sanitize**, **Serwist**, **web-push**
 - Tooling: **pnpm 12**, **Oxlint** (type-aware, built on TypeScript 7), **Prettier**, **Vitest 5**, **Playwright**
 
@@ -92,23 +86,29 @@ never at production.
 
 ## Design system
 
-- **Monochrome tokens only.** Every color, border width, layout size, duration and z-index is a CSS
-  variable in `src/app/globals.css` (`--bg`, `--fg`, `--fg-muted`, `--line`, `--bw`, `--header-h`,
-  `--gutter`, `--dur-1`, `--z-overlay`, …). Tailwind's default palette is removed (`--color-*: initial`),
-  so utilities can only use tokens (`bg-surface`, `text-muted`, `rule-b`, `hairline`, …).
-- **rem everywhere.** Spacing, type scale, borders (`--bw: 0.0625rem`) and layout are rem/clamp based;
-  Tailwind's px-based border utilities are replaced by `hairline`, `rule-{t,b,l,r}`, `edge-{l,b}`.
-- **Emphasis without color.** Priority is glyph density (`! !! !!! !!!!`), urgency a heavy edge, overdue
-  an inverted chip, heatmap levels `· ░ ▒ ▓ █`.
-- **Typography.** Headings and sub-headings use **Geist Pixel** (Vercel, `geist/font/pixel`, Square
-  style) via the `heading` / `subheading` utilities; body text is JetBrains Mono.
-- **Ambient background.** The landing page's animated ASCII field (`AsciiBackdrop`) sits behind the
-  landing, auth and app screens. It blits pre-rendered glyphs from an atlas, re-tints on theme change,
-  pauses when hidden, is static under reduced motion, and can be turned off in settings or the palette.
-- **Navigation.** A slim top bar (path, search/command, capture) and a tmux-style status line: numbered
-  windows (press `1`–`6`), the running focus timer, sync state and a clock. Boards are tabs on the board page.
-- **Hierarchy.** Every page uses `PageHeader` (path → title → description → actions) inside the shared
-  `page` container; content is grouped with `Frame`, `Rule` and `SettingRow`.
+- **Deep space, in monochrome.** The backdrop is a procedurally generated grand-design spiral
+  (`src/lib/cosmos/*`): ~40k particles — disk and arm stars, a bulge, nebula clouds, dust lanes and
+  spiked field stars — rotating differentially on the GPU. Light is built additively and dust absorbs
+  it in a second pass, so lanes darken the arms rather than the sky; light mode renders the same
+  galaxy as a negative plate. The camera dollies in on load, follows the pointer with eased parallax
+  and, on the landing page, tips edge-on as you scroll. It pauses when hidden, draws a single still
+  frame under reduced motion, and can be switched off in settings or the palette.
+- **Glass over the galaxy.** Panels are frosted glass (`glass`, `glass-strong`): translucent fills,
+  a lit top edge and soft depth; cards and inputs sit on them as `lift` surfaces. A floating dock
+  holds the six windows (press `1`–`6`), the running focus timer, sync state and a clock.
+- **Tokens only.** Every color, border width, radius, blur, shadow, layout size, duration and
+  z-index is a CSS variable in `src/app/globals.css` (`--bg`, `--panel`, `--card`, `--line`,
+  `--highlight`, `--radius-card`, `--blur`, `--dock-space`, `--dur-2`, `--z-overlay`, …). Tailwind's
+  default palette is removed (`--color-*: initial`), so utilities can only use tokens.
+- **rem everywhere.** Spacing, type scale, borders (`--bw: 0.0625rem`), radii and layout are rem/clamp
+  based; Tailwind's px border utilities are replaced by `hairline`, `rule-{t,b,l,r}`, `edge-{l,b}`.
+- **Emphasis without color.** Priority is a four-bar signal mark, urgency a soft glow, overdue an
+  inverted chip, heatmap levels are stars of increasing size and brightness.
+- **Typography.** Headings and sub-headings use **Geist Pixel** (Square) via the `heading` /
+  `subheading` utilities; reading text is **Geist Sans**; labels, numbers and code are **Geist Mono**.
+  Icons are **lucide** line icons at a 1.5 stroke (`Icon`).
+- **Hierarchy.** Every page uses `PageHeader` (eyebrow → title → description → actions) inside the
+  shared `page` container; content is grouped with `Frame`, `Rule` and `SettingRow`.
 
 ## Architecture
 
@@ -117,8 +117,9 @@ src/
   app/                    routes only (thin pages that compose feature components)
   components/
     ui/                   reusable primitives: Button, Input, Field, Frame, Modal, Menu, Segmented,
-                          Checkbox, Progress, Spinner, Tag, Kbd, Stat, Rule, PageHeader, ScrambleText…
-    layout/               app shell: TopBar, StatusLine, Overlays (lazy), Hotkeys
+                          Checkbox, Progress, Spinner, Tag, Kbd, Stat, Rule, PageHeader, Icon,
+                          PriorityMark, RevealText, Cosmos + CosmosBackdrop (WebGL galaxy)…
+    layout/               app shell: TopBar, StatusLine (floating dock), Overlays (lazy), Hotkeys
     features/<feature>/   kanban, notes, voice, palette, calendar, focus, stats, settings, auth, landing, pwa
     providers/            root + app (query cache) providers
   hooks/                  use-hotkeys, use-speech-recognition, use-reduced-motion, use-latch, use-clock…
@@ -127,9 +128,10 @@ src/
     schemas/              Zod schemas (inputs, DTOs, prefs) — runtime validation, shared with the server
     stores/               tiny typed external stores: ui, prefs, focus timer (selector subscriptions)
     utils/                pure helpers: position, nl-parse, format, safe-redirect, markdown, cn…
-    constants/            nav windows, shortcuts, priority glyphs, chrome colors
+    constants/            nav windows, shortcuts, priority ranks, chrome colors
+    cosmos/               galaxy generator, GLSL shaders and the WebGL renderer
     browser/              platform, sound, local data wipe
-    animation/            GSAP registration
+    animation/            GSAP + SplitText registration
   types/                  all shared TypeScript types (DTOs/inputs inferred from Zod, UI, prefs, focus,
                           kanban, API) + ambient DOM typings (Speech API, install prompt)
   server/                 server-only: db, auth, data-access layer, actions, rate limiting, push

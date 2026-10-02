@@ -17,7 +17,7 @@ const PATTERNS = {
   ],
 } as const satisfies Record<string, readonly (readonly [number, number])[]>;
 
-/** 8-bit square-wave chiptune blips via WebAudio (no audio files to fetch). */
+/** Soft sine chimes via WebAudio (no audio files to fetch); notes ring past their slot. */
 export function playBeep(kind: keyof typeof PATTERNS = "blip"): void {
   try {
     ctx ??= new AudioContext();
@@ -26,13 +26,15 @@ export function playBeep(kind: keyof typeof PATTERNS = "blip"): void {
       if (freq > 0) {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = "square";
+        osc.type = "sine";
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.06, t);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        const ring = dur * 6;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.12, t + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + ring);
         osc.connect(gain).connect(ctx.destination);
         osc.start(t);
-        osc.stop(t + dur);
+        osc.stop(t + ring);
       }
       t += dur;
     }

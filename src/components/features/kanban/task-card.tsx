@@ -5,8 +5,12 @@ import { CSS } from "@dnd-kit/utilities";
 import { motion } from "motion/react";
 import { memo } from "react";
 
+import { AlignLeft, Bell, Timer } from "lucide-react";
+
+import { Icon } from "@/components/ui/icon";
+import { PriorityMark } from "@/components/ui/priority-mark";
+import { useNow } from "@/hooks/use-now";
 import { Progress } from "@/components/ui/progress";
-import { PRIORITY_META } from "@/lib/constants/priority";
 import { cn } from "@/lib/utils/cn";
 import { formatDuration, relativeDue } from "@/lib/utils/format";
 import type { TaskDto } from "@/types/dto";
@@ -20,16 +24,21 @@ export const TaskCardBody = memo(function TaskCardBody({
   lifted?: boolean;
 }) {
   const done = task.subtasks.filter((s) => s.done).length;
-  const due = task.dueAt && !task.completedAt ? relativeDue(task.dueAt) : null;
+  // Relative to the viewer's clock and time zone, so it waits for the client.
+  const now = useNow();
+  const due =
+    task.dueAt && !task.completedAt && now !== null ? relativeDue(task.dueAt, new Date(now)) : null;
   const completed = task.completedAt !== null;
   const emphasis = !completed && (task.priority === "urgent" || task.priority === "high");
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-2.5 bg-bg p-3 transition-colors duration-(--dur-1) hairline",
-        lifted ? "-rotate-1 rule-strong" : "group-hover:rule-strong",
-        emphasis && "edge-l",
+        "flex flex-col gap-2.5 rounded-card lift p-3.5 transition-[border-color,box-shadow,transform] duration-(--dur-2)",
+        lifted ? "-rotate-1 rule-strong shadow-float" : "group-hover:rule-strong",
+        emphasis &&
+          !lifted &&
+          "shadow-[inset_0_var(--bw)_0_var(--highlight),0_0_1.25rem_-0.5rem_var(--glow)]",
       )}
     >
       <p
@@ -51,29 +60,33 @@ export const TaskCardBody = memo(function TaskCardBody({
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted empty:hidden">
         {task.priority !== "none" ? (
-          <span title={`${task.priority} priority`} className={cn(emphasis && "font-bold text-fg")}>
-            {PRIORITY_META[task.priority].glyph}
-          </span>
+          <PriorityMark priority={task.priority} className={cn(emphasis && "text-fg")} />
         ) : null}
         {due ? (
           <span
             className={cn(
-              due.tone === "overdue" && "bg-fg px-1 text-bg",
+              "inline-flex items-center gap-1",
+              due.tone === "overdue" && "rounded-full bg-fg px-2 text-bg",
               due.tone === "soon" && "text-fg",
             )}
           >
-            {task.remindAt ? "⏰ " : ""}
+            {task.remindAt ? <Icon icon={Bell} className="size-3" /> : null}
             {due.label}
           </span>
         ) : null}
         {task.subtasks.length > 0 ? (
           <span className="flex items-center gap-1.5">
-            <Progress value={done} max={task.subtasks.length} width={5} label="Subtasks" />
+            <Progress value={done} max={task.subtasks.length} label="Subtasks" className="w-8" />
             {done}/{task.subtasks.length}
           </span>
         ) : null}
-        {task.focusSeconds > 0 ? <span>◷ {formatDuration(task.focusSeconds)}</span> : null}
-        {task.description ? <span aria-label="Has notes">≡</span> : null}
+        {task.focusSeconds > 0 ? (
+          <span className="inline-flex items-center gap-1">
+            <Icon icon={Timer} className="size-3" />
+            {formatDuration(task.focusSeconds)}
+          </span>
+        ) : null}
+        {task.description ? <Icon icon={AlignLeft} className="size-3" label="Has notes" /> : null}
       </div>
     </div>
   );

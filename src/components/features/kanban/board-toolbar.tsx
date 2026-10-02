@@ -1,16 +1,19 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { PriorityMark } from "@/components/ui/priority-mark";
 import { Segmented } from "@/components/ui/segmented";
 import { TagToggle } from "@/components/ui/tag";
-import { PRIORITY_META } from "@/lib/constants/priority";
 import { PRIORITIES } from "@/lib/schemas/input";
 import type { BoardFilters, PriorityFilter } from "@/types/kanban";
 import type { SegmentOption } from "@/types/ui";
 
 const PRIORITY_OPTIONS: readonly SegmentOption<PriorityFilter>[] = [
   { value: "all", label: "all" },
-  ...PRIORITIES.map((p) => ({ value: p, label: PRIORITY_META[p].glyph })),
+  ...PRIORITIES.map((p) => ({
+    value: p,
+    label: <PriorityMark priority={p} />,
+  })),
 ];
 
 type Props = {

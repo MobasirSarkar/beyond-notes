@@ -1,18 +1,18 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { AsciiBackdrop } from "@/components/ui/ascii-backdrop";
+import { CosmosBackdrop } from "@/components/ui/cosmos-backdrop";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <AsciiBackdrop focus="center" />
+      <CosmosBackdrop variant="hero" />
       <main
         id="main"
-        className="flex min-h-dvh flex-col items-center justify-center gap-8 dots px-4 py-12"
+        className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-12"
       >
-        <Link href="/" className="heading text-md">
-          beyond<span className="animate-blink">_</span>
+        <Link href="/" className="heading text-2xl">
+          beyond
         </Link>
         <div className="w-full max-w-sm">{children}</div>
       </main>
