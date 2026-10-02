@@ -22,6 +22,9 @@ const securityHeaders = [
 ] as const;
 
 const nextConfig: NextConfig = {
+  // Self-contained server bundle (server.js + only the traced node_modules),
+  // opted into by the Docker build so local `next start` stays unchanged.
+  ...(process.env["NEXT_OUTPUT"] === "standalone" ? { output: "standalone" as const } : {}),
   reactCompiler: true,
   typedRoutes: true,
   poweredByHeader: false,

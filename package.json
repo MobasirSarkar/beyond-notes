@@ -20,6 +20,7 @@
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "build:migrate": "esbuild scripts/migrate.mjs --bundle --platform=node --target=node22 --format=esm --outfile=dist/migrate.mjs --log-level=warning",
     "db:studio": "drizzle-kit studio",
     "vapid": "web-push generate-vapid-keys --json",
     "check": "pnpm typecheck && pnpm lint && pnpm test"
