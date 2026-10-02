@@ -1,7 +1,7 @@
 /** GLSL ES 1.0 so it runs on every WebGL-capable device. */
 
 export const VERTEX_SHADER = /* glsl */ `
-attribute vec3 a_pos;
+attribute vec4 a_pos;
 attribute vec4 a_attr; // size, brightness, phase, kind
 
 uniform float u_time;
@@ -40,6 +40,19 @@ void main() {
     v_spike = step(2.0, size);
     gl_PointSize = size * u_dpr * (v_spike > 0.5 ? 5.0 : 1.0);
     v_kind = kind;
+    return;
+  }
+
+  if (kind > 4.5) {
+    // Background galaxy (5: star, 6: glow): an anchor plus an offset measured in
+    // half-shorter-side units, so shapes keep their proportions at any aspect
+    // ratio. Very far away, so the parallax is a fraction of the field stars'.
+    vec2 p = a_pos.xy + a_pos.zw * toNdc + vec2(u_yaw, -(u_tilt - 1.1)) * 0.012;
+    gl_Position = vec4(p, 0.0, 1.0);
+    gl_PointSize = kind > 5.5 ? min(size * minDim * 0.5, 640.0) : size * u_dpr;
+    v_alpha = brightness * u_reveal * u_gain;
+    v_kind = kind;
+    v_spike = 0.0;
     return;
   }
 
@@ -93,9 +106,13 @@ void main() {
   float d2 = dot(c, c) * 4.0;
   if (d2 > 1.0) discard;
 
+  // Soft sprites: nebula (2), dust (4) and background-galaxy glows (6).
+  bool soft = (v_kind > 1.5 && v_kind < 2.5) || (v_kind > 3.5 && v_kind < 4.5) || v_kind > 5.5;
+  bool dust = v_kind > 3.5 && v_kind < 4.5;
+
   float a;
-  if (v_kind > 1.5 && (v_kind < 2.5 || v_kind > 3.5)) {
-    // Nebula / dust: wide, soft Gaussian.
+  if (soft) {
+    // Wide, soft Gaussian.
     a = exp(-d2 * 3.2) * (1.0 - d2);
   } else if (v_spike > 0.5) {
     // Bright field star: tight core, halo and 4-point diffraction spikes.
@@ -109,7 +126,7 @@ void main() {
     a = exp(-d2 * 7.0) + 0.12 * exp(-d2 * 2.0) * (1.0 - d2);
   }
   // Dust outputs a neutral absorption amount; light is tinted by the theme ink.
-  vec3 color = v_kind > 3.5 ? vec3(a * v_alpha) : u_ink * a * v_alpha;
+  vec3 color = dust ? vec3(a * v_alpha) : u_ink * a * v_alpha;
   gl_FragColor = vec4(color, 1.0);
 }
 `;

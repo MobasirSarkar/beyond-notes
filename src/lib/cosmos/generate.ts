@@ -1,4 +1,10 @@
-import { STAR_KIND, type GalaxyCounts, type StarBuffers } from "@/types/cosmos";
+import {
+  STAR_KIND,
+  type CosmosVariant,
+  type DistantGalaxy,
+  type GalaxyCounts,
+  type StarBuffers,
+} from "@/types/cosmos";
 
 const TAU = Math.PI * 2;
 const ARMS = 2;
@@ -27,15 +33,30 @@ function gaussian(rand: () => number): number {
 export const armAngle = (arm: number, r: number): number =>
   (arm * TAU) / ARMS + Math.log(Math.max(r, ARM_START) / ARM_START) * WINDING;
 
+/** Glow sprites per background galaxy: nested core glows plus clouds along its structure. */
+const CORE_GLOWS = 5;
+const structureGlows = (g: DistantGalaxy) =>
+  g.shape === "spiral" ? 48 : g.shape === "edge-on" ? 14 : 0;
+const distantStars = (g: DistantGalaxy, scale: number) => Math.max(60, Math.round(g.stars * scale));
+const distantSize = (g: DistantGalaxy, scale: number) =>
+  distantStars(g, scale) + CORE_GLOWS + structureGlows(g);
+
 /**
  * Builds a two-armed grand-design spiral galaxy: an exponential disk with
  * stars concentrated along logarithmic arms, a 3D Gaussian bulge, soft
- * nebula sprites tracing the arms, and a twinkling foreground star field.
+ * nebula sprites tracing the arms, a twinkling foreground star field and a
+ * handful of small, distant galaxies that give the empty sky depth.
  */
-export function generateGalaxy(counts: GalaxyCounts, seed = 7): StarBuffers {
+export function generateGalaxy(
+  counts: GalaxyCounts,
+  distant: readonly DistantGalaxy[] = [],
+  seed = 7,
+): StarBuffers {
   const rand = mulberry32(seed);
-  const count = counts.disk + counts.bulge + counts.nebula + counts.field + counts.dust;
-  const positions = new Float32Array(count * 3);
+  const distantCount = distant.reduce((n, g) => n + distantSize(g, counts.distant), 0);
+  const count =
+    counts.disk + counts.bulge + counts.nebula + counts.field + distantCount + counts.dust;
+  const positions = new Float32Array(count * 4);
   const attributes = new Float32Array(count * 4);
   let i = 0;
 
@@ -47,7 +68,7 @@ export function generateGalaxy(counts: GalaxyCounts, seed = 7): StarBuffers {
     brightness: number,
     kind: number,
   ) => {
-    positions.set([r, angle, y], i * 3);
+    positions.set([r, angle, y, 0], i * 4);
     attributes.set([size, brightness, rand() * TAU, kind], i * 4);
     i += 1;
   };
@@ -116,9 +137,111 @@ export function generateGalaxy(counts: GalaxyCounts, seed = 7): StarBuffers {
     const bright = rand() < 0.025;
     const size = bright ? 2.2 + rand() * 1.2 : 0.5 + 1.2 * rand() ** 8;
     const brightness = bright ? 0.75 + 0.25 * rand() : 0.12 + 0.55 * rand() ** 4;
-    positions.set([rand() * 2.2 - 1.1, rand() * 2.2 - 1.1, rand()], i * 3);
+    positions.set([rand() * 2.2 - 1.1, rand() * 2.2 - 1.1, rand(), 0], i * 4);
     attributes.set([size, brightness, rand() * TAU, STAR_KIND.field], i * 4);
     i += 1;
+  }
+
+  // Background galaxies, drawn before dust (which must stay last).
+  const pushDistant = (
+    g: DistantGalaxy,
+    x: number,
+    y: number,
+    size: number,
+    brightness: number,
+    kind: number,
+  ) => {
+    // Incline (squash the minor axis), then rotate to the position angle.
+    const ys = y * g.axisRatio;
+    const ca = Math.cos(g.angle);
+    const sa = Math.sin(g.angle);
+    positions.set(
+      [g.anchor[0], g.anchor[1], (x * ca - ys * sa) * g.radius, (x * sa + ys * ca) * g.radius],
+      i * 4,
+    );
+    attributes.set([size, brightness * g.brightness, rand() * TAU, kind], i * 4);
+    i += 1;
+  };
+  for (const g of distant) {
+    const stars = distantStars(g, counts.distant);
+    for (let n = 0; n < stars; n++) {
+      let x: number;
+      let y: number;
+      if (g.shape === "spiral") {
+        if (rand() < 0.16) {
+          x = gaussian(rand) * 0.07;
+          y = gaussian(rand) * 0.07;
+        } else {
+          // Arms run out to the full radius; a thin exponential disk fills between.
+          const inArm = rand() < 0.78;
+          const r0 = inArm
+            ? 0.06 + rand() ** 0.85 * 0.94
+            : Math.min(1, -Math.log(1 - rand() * 0.95) * 0.32);
+          const theta = inArm ? armAngle(Math.floor(rand() * ARMS), r0 * 0.9) : rand() * TAU;
+          const spread = 0.025 + 0.06 * r0;
+          x = Math.cos(theta) * r0 + gaussian(rand) * spread;
+          y = Math.sin(theta) * r0 + gaussian(rand) * spread;
+        }
+      } else if (g.shape === "edge-on") {
+        const bulge = rand() < 0.25;
+        x = bulge ? gaussian(rand) * 0.12 : gaussian(rand) * 0.45;
+        y = bulge ? gaussian(rand) * 0.08 : gaussian(rand) * 0.03;
+      } else {
+        // Elliptical: smooth de Vaucouleurs-like falloff.
+        const r0 = rand() ** 1.8 * 0.95;
+        const theta = rand() * TAU;
+        x = Math.cos(theta) * r0;
+        y = Math.sin(theta) * r0;
+      }
+      const centre = Math.exp(-Math.hypot(x, y) * 3);
+      pushDistant(
+        g,
+        x,
+        y,
+        0.8 + 1.0 * rand() ** 4 + centre * 0.5,
+        (0.35 + 0.5 * rand() ** 2) * (0.6 + 0.4 * centre),
+        STAR_KIND.distant,
+      );
+    }
+    // Soft clouds trace the arms (or the disk of an edge-on) so the structure
+    // reads as light, not just as scattered points.
+    for (let n = 0; n < structureGlows(g); n++) {
+      if (g.shape === "spiral") {
+        const r0 = 0.15 + rand() ** 1.1 * 0.8;
+        const theta = armAngle(Math.floor(rand() * ARMS), r0 * 0.9);
+        const x = Math.cos(theta) * r0 + gaussian(rand) * 0.04;
+        const y = Math.sin(theta) * r0 + gaussian(rand) * 0.04;
+        pushDistant(
+          g,
+          x,
+          y,
+          g.radius * (0.22 + 0.2 * rand()),
+          0.05 + 0.04 * rand(),
+          STAR_KIND.distantGlow,
+        );
+      } else {
+        pushDistant(
+          g,
+          gaussian(rand) * 0.35,
+          0,
+          g.radius * (0.3 + 0.2 * rand()),
+          0.05,
+          STAR_KIND.distantGlow,
+        );
+      }
+    }
+    // Nested glows give each galaxy a luminous core and a soft disk.
+    for (let n = 0; n < CORE_GLOWS; n++) {
+      const t = n / (CORE_GLOWS - 1);
+      pushDistant(
+        g,
+        0,
+        0,
+        g.radius * (0.2 + 1.7 * t ** 1.4),
+        0.2 - 0.15 * t,
+        STAR_KIND.distantGlow,
+      );
+    }
   }
 
   // Dust lanes hug the inner (trailing) edge of each arm and absorb light.
@@ -145,7 +268,7 @@ export function generateGalaxy(counts: GalaxyCounts, seed = 7): StarBuffers {
 
 /** Scales particle counts to the canvas area so small screens stay cheap. */
 export function countsFor(
-  variant: "hero" | "ambient",
+  variant: CosmosVariant,
   cssWidth: number,
   cssHeight: number,
 ): GalaxyCounts {
@@ -160,5 +283,42 @@ export function countsFor(
     nebula: Math.round(base.nebula * Math.sqrt(f)),
     field: Math.round(base.field * f),
     dust: Math.round(base.dust * Math.sqrt(f)),
+    distant: f,
   };
+}
+
+/** Compact constructor for the composition tables below. */
+const g = (
+  shape: DistantGalaxy["shape"],
+  anchor: readonly [number, number],
+  radius: number,
+  axisRatio: number,
+  angle: number,
+  stars: number,
+  brightness: number,
+): DistantGalaxy => ({ shape, anchor, radius, axisRatio, angle, stars, brightness });
+
+/**
+ * Background galaxies per variant, composed around the main spiral: the hero
+ * keeps them clear of the headline; the app fills the sky the main galaxy
+ * leaves empty (it sits bottom-right), starting with the top-left corner.
+ */
+export function distantGalaxiesFor(variant: CosmosVariant): readonly DistantGalaxy[] {
+  if (variant === "hero") {
+    return [
+      g("spiral", [-0.8, 0.76], 0.18, 0.5, 0.6, 2_200, 0.9),
+      g("edge-on", [0.88, 0.84], 0.11, 1, -0.35, 800, 0.85),
+      g("elliptical", [-0.55, -0.82], 0.065, 0.7, 0.4, 500, 0.75),
+      g("spiral", [0.1, -0.86], 0.06, 0.9, 1.2, 450, 0.65),
+      g("elliptical", [-0.25, 0.9], 0.03, 0.55, -0.5, 200, 0.55),
+    ];
+  }
+  return [
+    g("spiral", [-0.86, 0.6], 0.4, 0.48, 0.55, 4_800, 1),
+    g("edge-on", [0.02, 0.78], 0.16, 1, -0.28, 1_200, 0.9),
+    g("elliptical", [-0.86, -0.3], 0.09, 0.65, 0.3, 700, 0.8),
+    g("spiral", [0.45, 0.58], 0.11, 0.85, 2.1, 1_100, 0.8),
+    g("elliptical", [-0.25, 0.08], 0.045, 0.5, -0.7, 300, 0.6),
+    g("edge-on", [0.08, -0.5], 0.07, 1, 0.5, 360, 0.6),
+  ];
 }

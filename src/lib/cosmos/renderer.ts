@@ -104,7 +104,7 @@ export function createGalaxyRenderer(canvas: HTMLCanvasElement): GalaxyRenderer 
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(aPos, 4, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, attributeBuffer);
     gl.enableVertexAttribArray(aAttr);
     gl.vertexAttribPointer(aAttr, 4, gl.FLOAT, false, 0, 0);
