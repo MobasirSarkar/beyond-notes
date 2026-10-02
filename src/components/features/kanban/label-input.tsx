@@ -14,14 +14,14 @@ type Props = {
 };
 
 /** Token input for tags: Enter/comma adds, Backspace removes the last one. */
-export function LabelInput({ value, onChange, placeholder = "add tag", id }: Props) {
+export function LabelInput({ value, onChange, placeholder = "Add a tag", id }: Props) {
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const add = () => {
     const parsed = labelsSchema.safeParse([...value, ...draft.split(/[,\s]+/).filter(Boolean)]);
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid tag");
+      setError(parsed.error.issues[0]?.message ?? "Invalid tag.");
       return;
     }
     setError(null);
@@ -66,7 +66,7 @@ export function LabelInput({ value, onChange, placeholder = "add tag", id }: Pro
           className="h-7 min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-subtle"
         />
       </div>
-      {error ? <p className="text-xs">! {error}</p> : null}
+      {error ? <p className="type-caption text-fg">{error}</p> : null}
     </div>
   );
 }

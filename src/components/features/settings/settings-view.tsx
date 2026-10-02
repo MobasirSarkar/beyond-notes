@@ -16,14 +16,14 @@ import { PushToggle } from "./push-toggle";
 import { SettingRow } from "./setting-row";
 
 const THEMES: readonly SegmentOption<ThemePref>[] = [
-  { value: "system", label: "system" },
-  { value: "light", label: "light" },
-  { value: "dark", label: "dark" },
+  { value: "system", label: "System" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
 ];
 const MOTION: readonly SegmentOption<MotionPref>[] = [
-  { value: "system", label: "system" },
-  { value: "full", label: "full" },
-  { value: "reduced", label: "reduced" },
+  { value: "system", label: "System" },
+  { value: "full", label: "Full" },
+  { value: "reduced", label: "Reduced" },
 ];
 
 type Props = {
@@ -41,13 +41,13 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
   return (
     <div className="flex flex-col">
       <PageHeader
-        eyebrow="preferences"
-        title="settings"
-        description="preferences are stored on this device"
+        eyebrow="Preferences"
+        title="Settings"
+        description="Preferences are stored on this device"
       />
 
       <div className="flex max-w-3xl flex-col gap-6">
-        <Frame title="appearance">
+        <Frame title="Appearance">
           <div className="flex flex-col [&>*+*]:rule-t">
             <SettingRow
               title="Theme"
@@ -75,21 +75,21 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
             </SettingRow>
             <SettingRow
               title="Ambient background"
-              description="The live galaxy behind the app. Rendered once, without motion, when motion is reduced."
+              description="The live galaxy behind the app. Shown as a still image when motion is reduced."
             >
               <Checkbox checked={ambient} onChange={(a) => setPrefs({ ambient: a })}>
-                {ambient ? "on" : "off"}
+                {ambient ? "On" : "Off"}
               </Checkbox>
             </SettingRow>
             <SettingRow title="Sound" description="Soft chimes for drags, completions and timers.">
               <Checkbox checked={sound} onChange={(s) => setPrefs({ sound: s })}>
-                {sound ? "on" : "off"}
+                {sound ? "On" : "Off"}
               </Checkbox>
             </SettingRow>
           </div>
         </Frame>
 
-        <Frame title="notifications">
+        <Frame title="Notifications">
           <SettingRow
             title="Push reminders"
             description="Get task reminders even when the app is closed."
@@ -98,26 +98,26 @@ export function SettingsView({ user, vapidPublicKey }: Props) {
           </SettingRow>
         </Frame>
 
-        <Frame title="data">
+        <Frame title="Data">
           <SettingRow
             title="Export"
             description="Download everything you own as JSON: boards, tasks, notes and focus history."
           >
             {/* Plain link: a file download, not client navigation. */}
             <a href="/api/export" download className={buttonStyles({ size: "sm" })}>
-              export json
+              Export JSON
             </a>
           </SettingRow>
         </Frame>
 
-        <Frame title="account">
+        <Frame title="Account">
           <div className="flex flex-col [&>*+*]:rule-t">
             <SettingRow
               title={`@${user.name}`}
-              description={`${user.email} · joined ${format(new Date(user.createdAt), "d MMM yyyy")}`}
+              description={`${user.email} · Joined ${format(new Date(user.createdAt), "d MMMM yyyy")}`}
             >
               <Button size="sm" variant="danger" onClick={signOut} disabled={pending}>
-                {pending ? "signing out…" : "sign out"}
+                {pending ? "Signing out…" : "Sign out"}
               </Button>
             </SettingRow>
           </div>

@@ -25,15 +25,15 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
 
   return (
     <section className="relative page flex min-h-[calc(100dvh-var(--header-h))] flex-col justify-center gap-8 py-20">
-      <motion.p className="label" {...rise(0.2)}>
-        a workspace for tasks, notes &amp; deep focus
+      <motion.p className="type-overline" {...rise(0.2)}>
+        A workspace for tasks, notes and deep focus
       </motion.p>
 
-      <h1 className="-ml-[0.04em] pb-[0.12em] heading text-[clamp(4.5rem,16vw,12rem)] leading-[0.82] tracking-tighter">
+      <h1 className="-ml-[0.04em] pb-[0.12em] type-hero">
         <RevealText text="beyond" delay={0.35} stagger={0.07} />
       </h1>
 
-      <motion.p className="max-w-md text-lg leading-relaxed text-muted" {...rise(0.9)}>
+      <motion.p className="max-w-md text-lg text-muted" {...rise(0.9)}>
         Plan on boards, think in notes, and disappear into focus — in a calm, keyboard-first space
         that works offline.
       </motion.p>
@@ -41,15 +41,15 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
       <motion.div className="flex flex-wrap items-center gap-3" {...rise(1.1)}>
         {signedIn ? (
           <Link href="/boards" className={buttonStyles({ variant: "solid", size: "lg" })}>
-            open workspace <ArrowRight aria-hidden className="size-4" />
+            Open workspace <ArrowRight aria-hidden className="size-4" />
           </Link>
         ) : (
           <>
             <Link href="/sign-up" className={buttonStyles({ variant: "solid", size: "lg" })}>
-              start for free <ArrowRight aria-hidden className="size-4" />
+              Start for free <ArrowRight aria-hidden className="size-4" />
             </Link>
             <Link href="/sign-in" className={buttonStyles({ variant: "ghost", size: "lg" })}>
-              sign in
+              Sign in
             </Link>
           </>
         )}
@@ -57,17 +57,17 @@ export function Hero({ signedIn }: { signedIn: boolean }) {
 
       <motion.div
         aria-hidden
-        className="absolute inset-x-(--gutter) bottom-8 flex items-end justify-between font-mono text-2xs tracking-label text-subtle uppercase"
+        className="absolute inset-x-(--gutter) bottom-8 flex items-end justify-between type-overline text-subtle"
         {...rise(1.6)}
       >
         <span className="flex items-center gap-3">
           <span className="w-10 rule-t" />
-          scroll
+          Scroll
         </span>
         <span className="hidden text-right sm:block">
-          grand-design spiral · ~40,000 particles
+          Grand-design spiral · ~40,000 particles
           <br />
-          rendered live in your browser
+          Rendered live in your browser
         </span>
       </motion.div>
     </section>

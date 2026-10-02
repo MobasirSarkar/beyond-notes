@@ -29,8 +29,8 @@ export function Frame({
     <Tag className={cn("overflow-hidden rounded-panel glass", className)}>
       {title || actions || meta ? (
         <header className="flex min-h-11 items-center gap-3 px-5 py-2 rule-b">
-          {title ? <h2 className="subheading">{title}</h2> : null}
-          {meta ? <span className="text-xs text-subtle">{meta}</span> : null}
+          {title ? <h2 className="type-subheading">{title}</h2> : null}
+          {meta ? <span className="type-caption">{meta}</span> : null}
           {actions ? <div className="ml-auto flex items-center gap-1">{actions}</div> : null}
         </header>
       ) : null}

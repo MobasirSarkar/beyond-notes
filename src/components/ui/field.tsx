@@ -15,16 +15,16 @@ type Props = {
 export function Field({ label, htmlFor, hint, error, className, children }: Props) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="label">
+      <label htmlFor={htmlFor} className="type-label">
         {label}
       </label>
       {children}
       {error ? (
-        <p role="alert" className="text-xs text-fg">
-          ! {error}
+        <p role="alert" className="type-caption text-fg">
+          {error}
         </p>
       ) : hint ? (
-        <p className="text-xs text-subtle">{hint}</p>
+        <p className="type-caption">{hint}</p>
       ) : null}
     </div>
   );

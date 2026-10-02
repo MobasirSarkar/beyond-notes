@@ -135,7 +135,7 @@ export function StepSlider<T extends string>({
   if (layout === "inline") {
     return (
       <div className={cn("flex items-center gap-3", className)}>
-        <span className="shrink-0 text-xs text-muted">
+        <span className="shrink-0 text-sm text-muted">
           {label} <span className="font-medium text-fg">{current?.label}</span>
         </span>
         {track}
@@ -148,10 +148,10 @@ export function StepSlider<T extends string>({
       <p className="flex items-baseline gap-2 text-sm">
         <span className="text-muted">{label}</span>
         <span className="font-medium text-fg">{current?.label}</span>
-        {current?.hint ? <span className="ml-auto text-xs text-subtle">{current.hint}</span> : null}
+        {current?.hint ? <span className="ml-auto type-caption">{current.hint}</span> : null}
       </p>
       {start || end ? (
-        <p className="flex justify-between text-xs text-subtle" aria-hidden>
+        <p className="flex justify-between type-caption" aria-hidden>
           <span>{start}</span>
           <span>{end}</span>
         </p>

@@ -20,6 +20,7 @@ import { useDeleteNote, useUpdateNote } from "@/lib/api/mutations";
 import { useNote, useOpenTasks } from "@/lib/api/queries";
 import { LIMITS } from "@/lib/schemas/input";
 import { cn } from "@/lib/utils/cn";
+import { plural } from "@/lib/utils/format";
 import { wordCount } from "@/lib/utils/markdown";
 import type { NoteDto } from "@/types/dto";
 
@@ -69,16 +70,16 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           href="/notes"
           className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg"
         >
-          <Icon icon={ArrowLeft} className="size-3.5" /> notes
+          <Icon icon={ArrowLeft} className="size-3.5" /> Notes
         </Link>
         <span className="ml-auto flex items-center gap-2 text-xs text-subtle" aria-live="polite">
           {saving ? (
             <>
-              <Spinner label="Saving" /> saving
+              <Spinner label="Saving" /> Saving…
             </>
           ) : (
             <>
-              saved <TimeAgo date={note.updatedAt} />
+              Saved <TimeAgo date={note.updatedAt} />
             </>
           )}
         </span>
@@ -94,9 +95,9 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           value={view}
           onChange={setView}
           options={[
-            { value: "write", label: "write" },
-            { value: "split", label: "split" },
-            { value: "read", label: "read" },
+            { value: "write", label: "Write" },
+            { value: "split", label: "Split" },
+            { value: "read", label: "Read" },
           ]}
         />
         <Menu
@@ -105,18 +106,18 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           items={[
             {
               id: "pin",
-              label: note.pinned ? "unpin" : "pin to top",
+              label: note.pinned ? "Unpin" : "Pin to top",
               onSelect: () => update.mutate({ noteId: note.id, pinned: !note.pinned }),
             },
             {
               id: "archive",
-              label: note.archived ? "unarchive" : "archive",
+              label: note.archived ? "Unarchive" : "Archive",
               onSelect: () => update.mutate({ noteId: note.id, archived: !note.archived }),
             },
             {
               id: "delete",
               danger: true,
-              label: "delete note",
+              label: "Delete note",
               onSelect: () =>
                 del.mutate({ noteId: note.id }, { onSuccess: () => router.push("/notes") }),
             },
@@ -130,27 +131,27 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
           setTitle(e.target.value);
           markDirty();
         }}
-        placeholder="untitled"
+        placeholder="Untitled"
         maxLength={LIMITS.noteTitle}
         aria-label="Note title"
-        className="w-full bg-transparent heading text-display outline-none placeholder:text-subtle"
+        className="w-full bg-transparent type-title outline-none placeholder:text-subtle"
       />
 
       <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_18rem]">
-        <Field label="tags" htmlFor={`${ids}-tags`}>
+        <Field label="Tags" htmlFor={`${ids}-tags`}>
           <LabelInput
             id={`${ids}-tags`}
             value={note.tags}
             onChange={(tags) => update.mutate({ noteId: note.id, tags })}
           />
         </Field>
-        <Field label="linked task" htmlFor={`${ids}-task`}>
+        <Field label="Linked task" htmlFor={`${ids}-task`}>
           <Listbox
             id={`${ids}-task`}
             value={note.taskId ?? ""}
             onChange={(v) => update.mutate({ noteId: note.id, taskId: v || null })}
             options={[
-              { value: "", label: "none" },
+              { value: "", label: "None" },
               ...(openTasks.data ?? []).map((t) => ({
                 value: t.id,
                 label: t.title.slice(0, 80),
@@ -193,17 +194,16 @@ export function NoteEditor({ initial }: { initial: NoteDto }) {
             {content.trim() ? (
               <LazyMarkdown source={content} />
             ) : (
-              <p className="text-sm text-subtle">nothing to preview</p>
+              <p className="text-sm text-subtle">Nothing to preview yet.</p>
             )}
           </section>
         ) : null}
       </div>
 
       <footer className="flex flex-wrap gap-x-6 gap-y-1 pt-3 text-xs text-subtle rule-t">
-        <span>-- {view === "read" ? "read" : "insert"} --</span>
-        <span>{wordCount(content)} words</span>
-        <span>{content.length} chars</span>
-        <span className="ml-auto">markdown · autosave</span>
+        <span className="type-numeric">{plural(wordCount(content), "word")}</span>
+        <span className="type-numeric">{plural(content.length, "character")}</span>
+        <span className="ml-auto">Markdown · saves automatically</span>
       </footer>
     </article>
   );

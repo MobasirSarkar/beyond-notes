@@ -41,12 +41,7 @@ export const TaskCardBody = memo(function TaskCardBody({
           "shadow-[inset_0_var(--bw)_0_var(--highlight),0_0_1.25rem_-0.5rem_var(--glow)]",
       )}
     >
-      <p
-        className={cn(
-          "text-sm leading-snug font-medium break-words",
-          completed && "text-subtle line-through",
-        )}
-      >
+      <p className={cn("text-sm font-medium break-words", completed && "text-subtle line-through")}>
         {task.title}
       </p>
 

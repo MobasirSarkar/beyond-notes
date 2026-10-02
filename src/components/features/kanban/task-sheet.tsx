@@ -34,12 +34,21 @@ import type { TaskDto } from "@/types/dto";
 
 import { LabelInput } from "./label-input";
 
+function TaskSheetTitle({ id }: { id: string }) {
+  return (
+    <>
+      Task{" "}
+      <span className="ml-1 type-numeric text-xs font-normal text-subtle">#{id.slice(0, 8)}</span>
+    </>
+  );
+}
+
 export function TaskSheet({ task, onClose }: { task: TaskDto | null; onClose: () => void }) {
   return (
     <Modal
       open={task !== null}
       onClose={onClose}
-      title={task ? `task / ${task.id.slice(0, 8)}` : "task"}
+      title={task ? <TaskSheetTitle id={task.id} /> : "Task"}
       placement="sheet"
     >
       {task ? <TaskEditor key={task.id} task={task} onClose={onClose} /> : null}
@@ -101,21 +110,21 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
         maxLength={LIMITS.taskTitle}
         rows={2}
         aria-label="Title"
-        className="w-full resize-none bg-transparent heading text-xl leading-snug outline-none"
+        className="w-full resize-none bg-transparent type-heading outline-none"
       />
 
       <section className="flex flex-col gap-5">
-        <Rule>properties</Rule>
+        <Rule>Properties</Rule>
         <StepSlider
-          label="priority"
+          label="Priority"
           value={task.priority}
           steps={PRIORITY_STEPS}
           onChange={(priority) => update.mutate({ taskId: task.id, priority })}
-          start="calm"
-          end="pressing"
+          start="Calm"
+          end="Pressing"
         />
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="due" htmlFor={`${ids}-due`}>
+          <Field label="Due" htmlFor={`${ids}-due`}>
             <Input
               id={`${ids}-due`}
               type="datetime-local"
@@ -125,7 +134,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
               }
             />
           </Field>
-          <Field label="remind" htmlFor={`${ids}-remind`} hint="push + in-app reminder">
+          <Field label="Remind" htmlFor={`${ids}-remind`} hint="Push and in-app reminder">
             <Input
               id={`${ids}-remind`}
               type="datetime-local"
@@ -136,7 +145,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             />
           </Field>
         </div>
-        <Field label="labels" htmlFor={`${ids}-labels`}>
+        <Field label="Labels" htmlFor={`${ids}-labels`}>
           <LabelInput
             id={`${ids}-labels`}
             value={task.labels}
@@ -146,7 +155,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
       </section>
 
       <section className="flex flex-col gap-3">
-        <Rule>notes</Rule>
+        <Rule>Notes</Rule>
         <div className="flex items-center justify-end gap-2">
           <MicButton
             size="sm"
@@ -159,17 +168,17 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             onClick={() => setPreview((p) => !p)}
             className={buttonStyles({ size: "sm", variant: "ghost" })}
           >
-            {preview ? "edit" : "preview"}
+            {preview ? "Edit" : "Preview"}
           </button>
         </div>
-        {speech.interim ? <p className="text-sm text-muted">… {speech.interim}</p> : null}
-        {speech.error ? <p className="text-sm">! {speech.error}</p> : null}
+        {speech.interim ? <p className="text-sm text-muted">{speech.interim}…</p> : null}
+        {speech.error ? <p className="text-sm text-muted">{speech.error}</p> : null}
         {preview ? (
           <div className="min-h-24 rounded-card lift p-4">
             {description ? (
               <LazyMarkdown source={description} />
             ) : (
-              <span className="text-subtle">no notes yet</span>
+              <span className="text-subtle">No notes yet</span>
             )}
           </div>
         ) : (
@@ -182,14 +191,14 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             maxLength={LIMITS.taskDescription}
             rows={8}
             aria-label="Notes (Markdown)"
-            placeholder="markdown supported: links, lists, - [ ] checklists"
+            placeholder="Markdown supported: links, lists and - [ ] checklists"
           />
         )}
       </section>
 
       <section className="flex flex-col gap-3">
         <Rule>
-          subtasks {task.subtasks.length > 0 ? `· ${doneCount}/${task.subtasks.length}` : ""}
+          Subtasks {task.subtasks.length > 0 ? `· ${doneCount}/${task.subtasks.length}` : ""}
         </Rule>
         {task.subtasks.length > 0 ? (
           <Progress value={doneCount} max={task.subtasks.length} label="Subtask progress" />
@@ -228,7 +237,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             value={subDraft}
             onChange={(e) => setSubDraft(e.target.value)}
             maxLength={LIMITS.subtaskTitle}
-            placeholder="add a subtask…"
+            placeholder="Add a subtask…"
             aria-label="New subtask"
           />
         </form>
@@ -236,10 +245,10 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
 
       <footer className="flex flex-col gap-4 pt-6 rule-t">
         <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-subtle">
-          <span>created {format(new Date(task.createdAt), "d MMM yyyy")}</span>
-          {task.focusSeconds > 0 ? <span>focused {formatDuration(task.focusSeconds)}</span> : null}
+          <span>Created {format(new Date(task.createdAt), "d MMM yyyy")}</span>
+          {task.focusSeconds > 0 ? <span>Focused {formatDuration(task.focusSeconds)}</span> : null}
           {task.completedAt ? (
-            <span>completed {format(new Date(task.completedAt), "d MMM")}</span>
+            <span>Completed {format(new Date(task.completedAt), "d MMM yyyy")}</span>
           ) : null}
         </p>
         <div className="flex flex-wrap justify-between gap-2">
@@ -248,7 +257,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
             onClick={() => focusTimer.setTask(task.id)}
             className={buttonStyles({ variant: "solid" })}
           >
-            <Icon icon={Timer} /> focus on this
+            <Icon icon={Timer} /> Focus on this
           </Link>
           <ConfirmButton
             size="md"
@@ -257,7 +266,7 @@ function TaskEditor({ task, onClose }: { task: TaskDto; onClose: () => void }) {
               onClose();
             }}
           >
-            delete task
+            Delete task
           </ConfirmButton>
         </div>
       </footer>

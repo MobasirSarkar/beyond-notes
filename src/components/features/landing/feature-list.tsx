@@ -55,12 +55,12 @@ export function FeatureList() {
             <span className="grid size-10 place-items-center rounded-full lift">
               <Icon icon={f.icon} />
             </span>
-            <span className="font-mono text-xs text-subtle tabular-nums">
+            <span className="type-numeric text-xs text-subtle">
               {String(i + 1).padStart(2, "0")}
             </span>
           </div>
-          <h3 className="heading text-lg">{f.title}</h3>
-          <p className="text-sm leading-relaxed text-muted">{f.body}</p>
+          <h3 className="type-heading">{f.title}</h3>
+          <p className="text-sm text-muted">{f.body}</p>
         </li>
       ))}
     </ol>

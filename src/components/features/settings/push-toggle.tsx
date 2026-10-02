@@ -11,12 +11,12 @@ import { subscribePushAction, unsubscribePushAction } from "@/server/actions/pus
 type Status = "loading" | "unsupported" | "unconfigured" | "denied" | "off" | "on";
 
 const COPY: Record<Status, string> = {
-  loading: "checking…",
-  unsupported: "not supported here — on iOS, add the app to your home screen first",
-  unconfigured: "not configured on this server",
-  denied: "blocked in browser settings",
-  off: "off",
-  on: "on for this device",
+  loading: "Checking…",
+  unsupported: "Not supported here. On iOS, add the app to your Home Screen first.",
+  unconfigured: "Not configured on this server",
+  denied: "Blocked in browser settings",
+  off: "Off",
+  on: "On for this device",
 };
 
 async function currentStatus(vapidKey: string | null): Promise<Status> {
@@ -93,15 +93,15 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-muted">{COPY[status]}</span>
+      <span className="text-sm text-muted">{COPY[status]}</span>
       {status === "off" ? (
         <Button size="sm" variant="solid" onClick={enable} disabled={busy}>
-          enable
+          Enable
         </Button>
       ) : null}
       {status === "on" ? (
         <Button size="sm" onClick={disable} disabled={busy}>
-          disable
+          Disable
         </Button>
       ) : null}
     </div>

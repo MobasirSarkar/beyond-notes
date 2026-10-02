@@ -12,17 +12,17 @@ import { Spinner } from "@/components/ui/spinner";
 import { signIn, signUp } from "@/lib/auth/client";
 
 const signInSchema = z.object({
-  email: z.email("Enter a valid email").max(254),
-  password: z.string().min(1, "Password required").max(128),
+  email: z.email("Enter a valid email address.").max(254),
+  password: z.string().min(1, "Enter your password.").max(128),
 });
 const signUpSchema = signInSchema.extend({
-  name: z.string().trim().min(1, "Handle required").max(60),
+  name: z.string().trim().min(1, "Enter your name.").max(60),
   password: z
     .string()
-    .min(10, "At least 10 characters")
+    .min(10, "Use at least 10 characters.")
     .max(128)
-    .regex(/[a-z]/i, "Include a letter")
-    .regex(/\d|[^a-z0-9]/i, "Include a number or symbol"),
+    .regex(/[a-z]/i, "Include at least one letter.")
+    .regex(/\d|[^a-z0-9]/i, "Include a number or symbol."),
 });
 
 type Props = { mode: "sign-in" | "sign-up"; next: string; github: boolean };
@@ -41,12 +41,14 @@ export function AuthForm({ mode, next, github }: Props) {
       let failure: { status: number; message?: string | undefined } | null = null;
       if (isSignUp) {
         const parsed = signUpSchema.safeParse(data);
-        if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Invalid input");
+        if (!parsed.success)
+          return setError(parsed.error.issues[0]?.message ?? "Check the highlighted fields.");
         const res = await signUp.email(parsed.data);
         if (res.error) failure = { status: res.error.status, message: res.error.message };
       } else {
         const parsed = signInSchema.safeParse(data);
-        if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Invalid input");
+        if (!parsed.success)
+          return setError(parsed.error.issues[0]?.message ?? "Check the highlighted fields.");
         const res = await signIn.email(parsed.data);
         if (res.error) failure = { status: res.error.status };
       }
@@ -56,8 +58,8 @@ export function AuthForm({ mode, next, github }: Props) {
           failure.status === 429
             ? "Too many attempts. Wait a minute and try again."
             : isSignUp
-              ? (failure.message ?? "Could not create the account")
-              : "Invalid email or password",
+              ? (failure.message ?? "Could not create the account.")
+              : "Incorrect email or password.",
         );
         return;
       }
@@ -69,16 +71,16 @@ export function AuthForm({ mode, next, github }: Props) {
   return (
     <div className="flex flex-col overflow-hidden rounded-panel glass-strong">
       <header className="flex flex-col gap-1 px-6 py-6 rule-b sm:px-8">
-        <p className="label">{isSignUp ? "new session" : "resume session"}</p>
-        <h1 className="heading text-xl">{isSignUp ? "Create your account" : "Welcome back"}</h1>
+        <p className="type-overline">{isSignUp ? "Get started" : "Sign in"}</p>
+        <h1 className="type-heading">{isSignUp ? "Create your account" : "Welcome back"}</h1>
       </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-5 px-6 py-6 sm:px-8" noValidate>
         {isSignUp ? (
-          <Field label="handle" htmlFor={`${ids}-name`}>
+          <Field label="Name" htmlFor={`${ids}-name`}>
             <Input id={`${ids}-name`} name="name" autoComplete="username" maxLength={60} required />
           </Field>
         ) : null}
-        <Field label="email" htmlFor={`${ids}-email`}>
+        <Field label="Email" htmlFor={`${ids}-email`}>
           <Input
             id={`${ids}-email`}
             name="email"
@@ -90,9 +92,9 @@ export function AuthForm({ mode, next, github }: Props) {
           />
         </Field>
         <Field
-          label="password"
+          label="Password"
           htmlFor={`${ids}-password`}
-          hint={isSignUp ? "10+ characters, with a number or symbol" : undefined}
+          hint={isSignUp ? "At least 10 characters, including a number or symbol." : undefined}
         >
           <Input
             id={`${ids}-password`}
@@ -122,7 +124,7 @@ export function AuthForm({ mode, next, github }: Props) {
 
         <Button type="submit" variant="solid" size="lg" disabled={pending}>
           {pending ? <Spinner label="Working" /> : null}
-          {isSignUp ? "create account" : "sign in"}
+          {isSignUp ? "Create account" : "Sign in"}
         </Button>
 
         {github ? (
@@ -131,29 +133,29 @@ export function AuthForm({ mode, next, github }: Props) {
             disabled={pending}
             onClick={() => void signIn.social({ provider: "github", callbackURL: next })}
           >
-            continue with github
+            Continue with GitHub
           </Button>
         ) : null}
       </form>
       <footer className="px-6 py-4 text-center text-sm text-muted rule-t sm:px-8">
         {isSignUp ? (
           <>
-            have an account?{" "}
+            Already have an account?{" "}
             <Link
               href="/sign-in"
               className="text-fg underline decoration-dotted underline-offset-4"
             >
-              sign in
+              Sign in
             </Link>
           </>
         ) : (
           <>
-            new here?{" "}
+            New here?{" "}
             <Link
               href="/sign-up"
               className="text-fg underline decoration-dotted underline-offset-4"
             >
-              create an account
+              Create an account
             </Link>
           </>
         )}

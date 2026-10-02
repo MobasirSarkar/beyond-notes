@@ -11,12 +11,12 @@ import { Rule } from "@/components/ui/rule";
 import { getSession } from "@/server/session";
 
 const KEYS = [
-  ["⌘K", "command palette"],
-  ["t", "capture a task"],
-  ["v", "capture by voice"],
-  ["n", "new note"],
-  ["1–6", "switch window"],
-  ["?", "all shortcuts"],
+  ["⌘K", "Command palette"],
+  ["T", "Capture a task"],
+  ["V", "Capture by voice"],
+  ["N", "New note"],
+  ["1–6", "Switch window"],
+  ["?", "All shortcuts"],
 ] as const;
 
 export default async function LandingPage() {
@@ -26,12 +26,12 @@ export default async function LandingPage() {
       <CosmosBackdrop variant="hero" />
       <header>
         <div className="page flex h-(--header-h) items-center justify-between">
-          <span className="heading text-lg">beyond</span>
+          <span className="type-wordmark text-lg">beyond</span>
           <Link
             href={session ? "/boards" : "/sign-in"}
             className={buttonStyles({ size: "sm", variant: "outline" })}
           >
-            {session ? "open workspace" : "sign in"}
+            {session ? "Open workspace" : "Sign in"}
             {session ? <Icon icon={ArrowRight} className="size-3.5" /> : null}
           </Link>
         </div>
@@ -39,11 +39,11 @@ export default async function LandingPage() {
       <main id="main">
         <Hero signedIn={session !== null} />
         <section className="page flex flex-col gap-8 py-(--section-gap)">
-          <Rule>what&apos;s inside</Rule>
+          <Rule>What’s inside</Rule>
           <FeatureList />
         </section>
         <section className="page flex flex-col gap-8 pb-(--section-gap)">
-          <Rule>keyboard first</Rule>
+          <Rule>Keyboard first</Rule>
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {KEYS.map(([k, d]) => (
               <li
@@ -59,8 +59,8 @@ export default async function LandingPage() {
       </main>
       <footer>
         <div className="page flex flex-wrap justify-between gap-2 py-8 text-xs text-subtle">
-          <span>beyond · a calm orbit for your work</span>
-          <span>offline · installable · keyboard first</span>
+          <span>Beyond · A calm orbit for your work</span>
+          <span>Offline · Installable · Keyboard first</span>
         </div>
       </footer>
     </>

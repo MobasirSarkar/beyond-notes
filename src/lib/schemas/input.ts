@@ -24,7 +24,7 @@ export const prioritySchema = z.enum(PRIORITIES);
 export const idSchema = z.uuid();
 
 const trimmed = (max: number) => z.string().trim().max(max);
-const required = (max: number) => trimmed(max).min(1, "Required");
+const required = (max: number) => trimmed(max).min(1, "Required.");
 
 const labelSchema = z
   .string()
@@ -32,7 +32,7 @@ const labelSchema = z
   .toLowerCase()
   .min(1)
   .max(LIMITS.label)
-  .regex(/^[\p{L}\p{N}_-]+$/u, "Letters, numbers, - and _ only");
+  .regex(/^[\p{L}\p{N}_-]+$/u, "Use letters, numbers, hyphens and underscores only.");
 
 export const labelsSchema = z
   .array(labelSchema)

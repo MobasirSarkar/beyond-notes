@@ -47,7 +47,7 @@ export function FocusController() {
         const title = e.kind === "focus" ? "Focus block complete" : "Break over";
         const body =
           e.kind === "focus"
-            ? `${task ? `“${task.title}” · ` : ""}next: ${FOCUS_LABEL[e.next]}`
+            ? `${task ? `“${task.title}” · ` : ""}Next: ${FOCUS_LABEL[e.next]}`
             : "Ready for another round?";
         toast.success(title, { description: body });
         void notify(title, body, "focus");

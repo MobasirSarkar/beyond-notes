@@ -14,6 +14,13 @@ export class ApiError extends Error {
 
 const errorBody = z.object({ error: z.string() });
 
+// Set while signing out: queries refetching after the session is gone get 401s
+// that are expected, and must not bounce the user to the sign-in page.
+let signingOut = false;
+export function expectSignOut(): void {
+  signingOut = true;
+}
+
 /** Fetches a read endpoint and validates the JSON against its DTO schema. */
 export async function fetchJson<S extends z.ZodType>(
   url: string,
@@ -27,7 +34,7 @@ export async function fetchJson<S extends z.ZodType>(
     let message = res.statusText;
     const body = errorBody.safeParse(await res.json().catch(() => null));
     if (body.success) message = body.data.error;
-    if (res.status === 401 && typeof window !== "undefined") {
+    if (res.status === 401 && typeof window !== "undefined" && !signingOut) {
       window.location.assign(`/sign-in?next=${encodeURIComponent(window.location.pathname)}`);
     }
     throw new ApiError(message, res.status);

@@ -33,9 +33,9 @@ export function ShortcutHelp() {
             </ul>
           </section>
         ))}
-        <p className="text-xs leading-relaxed text-muted sm:col-span-2">
-          On a board, focus a card and press <Kbd>space</Kbd> to lift it, arrow keys to move, and{" "}
-          <Kbd>space</Kbd> again to drop. <Kbd>enter</Kbd> opens the card.
+        <p className="text-sm text-muted sm:col-span-2">
+          On a board, focus a card and press <Kbd>Space</Kbd> to lift it, arrow keys to move, and{" "}
+          <Kbd>Space</Kbd> again to drop. <Kbd>Enter</Kbd> opens the card.
         </p>
       </div>
     </Modal>

@@ -34,9 +34,9 @@ import { OrbitDial } from "./orbit-dial";
 
 const KIND_OPTIONS = FOCUS_KINDS.map((k) => ({ value: k, label: FOCUS_LABEL[k] }));
 const LENGTHS: readonly { key: TimerLengthKey; label: string; max: number }[] = [
-  { key: "focusMinutes", label: "focus", max: 120 },
-  { key: "shortBreakMinutes", label: "short break", max: 60 },
-  { key: "longBreakMinutes", label: "long break", max: 60 },
+  { key: "focusMinutes", label: "Focus", max: 120 },
+  { key: "shortBreakMinutes", label: "Short break", max: 60 },
+  { key: "longBreakMinutes", label: "Long break", max: 60 },
 ];
 
 export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
@@ -78,12 +78,12 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
   return (
     <div className="flex flex-col">
       <PageHeader
-        eyebrow="deep work"
-        title="focus"
+        eyebrow="Deep work"
+        title="Focus"
         description={
           task
-            ? `working on “${task.title}”`
-            : "free focus · pick a task below to track time against it"
+            ? `Working on “${task.title}”`
+            : "Free focus. Pick a task below to track time against it."
         }
       />
 
@@ -104,7 +104,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
             label="Session progress"
             className="w-full max-w-[min(100%,24rem,52dvh)]"
           >
-            <span className="subheading text-muted">{FOCUS_LABEL[kind]}</span>
+            <span className="type-overline">{FOCUS_LABEL[kind]}</span>
             <BigClock
               value={clock}
               blink={running}
@@ -124,40 +124,40 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
                 />
               ))}
             </span>
-            <span className="text-xs text-subtle">{completed} completed</span>
+            <span className="type-caption">{completed} completed</span>
           </OrbitDial>
           <div className="flex flex-wrap justify-center gap-2">
             {running ? (
               <Button size="lg" variant="solid" onClick={focusTimer.pause} className="min-w-36">
-                <Icon icon={Pause} /> pause
+                <Icon icon={Pause} /> Pause
               </Button>
             ) : (
               <Button size="lg" variant="solid" onClick={start} className="min-w-36">
-                <Icon icon={Play} /> {started ? "resume" : "start"}
+                <Icon icon={Play} /> {started ? "Resume" : "Start"}
               </Button>
             )}
             <Button
               size="lg"
               onClick={focusTimer.reset}
-              title="Reset (logs focus of 1 min or more)"
+              title="Reset (sessions of a minute or more are logged)"
             >
-              <Icon icon={RotateCcw} /> reset
+              <Icon icon={RotateCcw} /> Reset
             </Button>
             <Button size="lg" variant="ghost" onClick={focusTimer.skip}>
-              skip <Icon icon={SkipForward} />
+              Skip <Icon icon={SkipForward} />
             </Button>
           </div>
         </section>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Frame title="target">
-            <Field label="working on" htmlFor={`${ids}-task`}>
+          <Frame title="Target">
+            <Field label="Working on" htmlFor={`${ids}-task`}>
               <Listbox
                 id={`${ids}-task`}
                 value={taskId ?? ""}
                 onChange={(v) => focusTimer.setTask(v || null)}
                 options={[
-                  { value: "", label: "free focus" },
+                  { value: "", label: "Free focus" },
                   ...(tasks.data ?? []).map((t) => ({
                     value: t.id,
                     label: t.title.slice(0, 80),
@@ -168,7 +168,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
             </Field>
           </Frame>
 
-          <Frame title="lengths" meta="minutes">
+          <Frame title="Lengths" meta="Minutes">
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-3 gap-3">
                 {LENGTHS.map(({ key, label, max }) => (
@@ -193,7 +193,7 @@ export function FocusView({ initialTaskId }: { initialTaskId: string | null }) {
                 ))}
               </div>
               <Checkbox checked={prefs.sound} onChange={(sound) => setPrefs({ sound })}>
-                chime sounds
+                Chime sounds
               </Checkbox>
             </div>
           </Frame>

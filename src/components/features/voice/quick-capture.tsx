@@ -15,6 +15,7 @@ import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useCreateNote, useCreateTask } from "@/lib/api/mutations";
 import { useBoards } from "@/lib/api/queries";
 import { ui, useUi } from "@/lib/stores/ui";
+import { capitalize } from "@/lib/utils/format";
 import { parseCapture } from "@/lib/utils/nl-parse";
 
 import { MicButton } from "./mic-button";
@@ -71,7 +72,7 @@ export function QuickCapture() {
         {
           onSuccess: (n) =>
             toast.success("Note saved", {
-              action: { label: "open", onClick: () => router.push(`/notes/${n.id}`) },
+              action: { label: "Open", onClick: () => router.push(`/notes/${n.id}`) },
             }),
         },
       );
@@ -92,7 +93,7 @@ export function QuickCapture() {
             toast.success("Task captured", {
               description: t.title,
               action: {
-                label: "view",
+                label: "View",
                 onClick: () => router.push(`/boards/${t.boardId}?task=${t.id}`),
               },
             }),
@@ -106,7 +107,7 @@ export function QuickCapture() {
     <Modal
       open={capture.open}
       onClose={close}
-      title={capture.voice ? "voice capture" : "capture"}
+      title={capture.voice ? "Voice capture" : "Capture"}
       placement="top"
     >
       <form onSubmit={submit} className="flex flex-col gap-5 p-5 sm:p-6">
@@ -115,7 +116,7 @@ export function QuickCapture() {
             data-autofocus
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="fix login tomorrow 5pm urgent #auth"
+            placeholder="e.g. Fix login tomorrow 5pm urgent #auth"
             maxLength={200}
             aria-label="What needs doing?"
             className="min-w-0 flex-1 bg-transparent pb-2 text-lg outline-none rule-b placeholder:text-subtle focus:rule-strong"
@@ -136,26 +137,26 @@ export function QuickCapture() {
               className="flex items-center gap-3 overflow-hidden text-sm"
             >
               <Waveform active={speech.listening} />
-              <span className="truncate text-muted">{speech.interim || "listening…"}</span>
+              <span className="truncate text-muted">{speech.interim || "Listening…"}</span>
             </motion.div>
           ) : null}
         </AnimatePresence>
-        {speech.error ? <p className="text-sm">! {speech.error}</p> : null}
+        {speech.error ? <p className="text-sm text-muted">{speech.error}</p> : null}
 
         <div className="flex min-h-7 flex-wrap items-center gap-2" aria-live="polite">
-          <Token label="type">{parsed.kind}</Token>
+          <Token label="Type">{capitalize(parsed.kind)}</Token>
           {parsed.dueAt ? (
-            <Token label={parsed.remindAt ? "remind" : "due"}>
-              {format(parsed.dueAt, "EEE d MMM, HH:mm")}
+            <Token label={parsed.remindAt ? "Remind" : "Due"}>
+              {format(parsed.dueAt, "EEE, d MMM, HH:mm")}
             </Token>
           ) : null}
           {parsed.priority !== "none" ? (
-            <Token label="priority">
-              <PriorityMark priority={parsed.priority} /> {parsed.priority}
+            <Token label="Priority">
+              <PriorityMark priority={parsed.priority} /> {capitalize(parsed.priority)}
             </Token>
           ) : null}
           {parsed.labels.map((l) => (
-            <Token key={l} label="tag">
+            <Token key={l} label="Tag">
               #{l}
             </Token>
           ))}
@@ -164,7 +165,7 @@ export function QuickCapture() {
         <div className="flex flex-wrap items-center justify-between gap-3 pt-5 rule-t">
           {parsed.kind === "task" && boards.data && boards.data.length > 1 ? (
             <div className="flex items-center gap-2">
-              <span className="label">board</span>
+              <span className="type-label">Board</span>
               <Listbox
                 label="Board"
                 size="sm"
@@ -176,11 +177,11 @@ export function QuickCapture() {
             </div>
           ) : (
             <p className="text-xs text-subtle">
-              start with <span className="text-muted">“note”</span> to save a note instead
+              Start with <span className="text-muted">“note”</span> to save a note instead
             </p>
           )}
           <Button type="submit" variant="solid" disabled={!parsed.title}>
-            save <Kbd className="border-bg/40 text-bg">↵</Kbd>
+            Save <Kbd className="border-bg/40 text-bg">↵</Kbd>
           </Button>
         </div>
       </form>

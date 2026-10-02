@@ -23,11 +23,11 @@ function FocusBadge() {
     <Link
       href="/focus"
       aria-label={`Focus timer ${running ? "running" : "paused"}, ${formatClock(remaining)} left`}
-      className="flex items-center gap-2 rounded-full px-3 font-mono hover:bg-surface-2"
+      className="flex items-center gap-2 rounded-full px-3 hover:bg-surface-2"
     >
       <Icon icon={running ? Play : Pause} className="size-3" />
       <span className="hidden xl:inline">{FOCUS_LABEL[kind]}</span>
-      <span className="tabular-nums">{formatClock(remaining)}</span>
+      <span className="type-numeric">{formatClock(remaining)}</span>
     </Link>
   );
 }
@@ -39,12 +39,12 @@ function SyncState() {
     <span className="flex items-center gap-2 px-3" aria-live="polite">
       {pending > 0 && online ? (
         <>
-          <Spinner label="Syncing" /> sync
+          <Spinner label="Syncing" /> Syncing
         </>
       ) : (
         <>
           <span aria-hidden className={`size-1.5 rounded-full ${online ? "bg-fg" : "hairline"}`} />
-          {online ? "online" : `offline${pending ? ` · ${pending} queued` : ""}`}
+          {online ? "Online" : `Offline${pending ? ` · ${pending} queued` : ""}`}
         </>
       )}
     </span>
@@ -100,7 +100,7 @@ export function StatusLine({ userName }: { userName: string }) {
           <FocusBadge />
           <SyncState />
           <span className="hidden items-center px-3 lg:flex">@{userName}</span>
-          <span className="flex items-center rounded-full bg-surface-2 px-3.5 font-mono text-fg tabular-nums">
+          <span className="flex items-center rounded-full bg-surface-2 px-3.5 type-numeric text-fg">
             {clock}
           </span>
         </div>

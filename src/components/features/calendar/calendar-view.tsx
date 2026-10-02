@@ -42,7 +42,7 @@ import { formText } from "@/lib/utils/form";
 import { parseCapture } from "@/lib/utils/nl-parse";
 import type { CalendarTaskDto } from "@/types/dto";
 
-const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 const dayKey = (d: Date) => format(d, "yyyy-MM-dd");
 
 function TaskChip({ task }: { task: CalendarTaskDto }) {
@@ -106,7 +106,7 @@ function DayCell({ day, month, tasks, selected, onSelect }: DayProps) {
     >
       <span
         className={cn(
-          "flex size-6 items-center justify-center self-end rounded-full font-mono text-xs tabular-nums",
+          "flex size-6 items-center justify-center self-end rounded-full type-numeric text-xs",
           today && "bg-fg font-medium text-bg shadow-glow",
         )}
       >
@@ -117,7 +117,7 @@ function DayCell({ day, month, tasks, selected, onSelect }: DayProps) {
           <TaskChip key={t.id} task={t} />
         ))}
         {tasks.length > 3 ? (
-          <span className="text-2xs text-muted">+{tasks.length - 3} more</span>
+          <span className="text-2xs text-muted">{tasks.length - 3} more</span>
         ) : null}
       </div>
       {tasks.length > 0 ? (
@@ -218,9 +218,9 @@ export function CalendarView() {
   return (
     <div className="flex flex-col">
       <PageHeader
-        eyebrow="schedule"
-        title={format(month, "MMMM yyyy").toLowerCase()}
-        description="drag tasks between days to reschedule"
+        eyebrow="Schedule"
+        title={format(month, "MMMM yyyy")}
+        description="Drag tasks between days to reschedule them"
         actions={
           <>
             {calendar.isFetching ? <Spinner className="text-muted" /> : null}
@@ -238,7 +238,7 @@ export function CalendarView() {
                 setSelected(new Date());
               }}
             >
-              today
+              Today
             </Button>
             <Button
               size="sm"
@@ -260,7 +260,11 @@ export function CalendarView() {
           >
             <div role="row" className="grid grid-cols-7">
               {WEEKDAYS.map((d) => (
-                <div key={d} role="columnheader" className="py-2 text-center label rule-b rule-r">
+                <div
+                  key={d}
+                  role="columnheader"
+                  className="py-2 text-center type-overline rule-b rule-r"
+                >
                   {d}
                 </div>
               ))}
@@ -280,14 +284,10 @@ export function CalendarView() {
           </div>
         </DndContext>
 
-        <Frame
-          title={format(selected, "EEE d MMM").toLowerCase()}
-          meta={`${agenda.length} due`}
-          as="aside"
-        >
+        <Frame title={format(selected, "EEEE, d MMMM")} meta={`${agenda.length} due`} as="aside">
           <div className="flex flex-col gap-4">
             {agenda.length === 0 ? (
-              <p className="text-sm text-subtle">nothing due</p>
+              <p className="text-sm text-subtle">Nothing due.</p>
             ) : (
               <ul className="flex flex-col">
                 {agenda.map((t) => (
@@ -299,7 +299,7 @@ export function CalendarView() {
                         t.completedAt && "text-subtle line-through",
                       )}
                     >
-                      <span className="text-xs text-subtle tabular-nums">
+                      <span className="type-numeric text-xs text-subtle">
                         {format(new Date(t.dueAt), "HH:mm")}
                       </span>
                       <span className="min-w-0 flex-1 truncate">{t.title}</span>
@@ -315,7 +315,7 @@ export function CalendarView() {
               <Input
                 name="title"
                 maxLength={200}
-                placeholder="add for this day, e.g. 3pm call"
+                placeholder="Add a task, e.g. “Call Sam 3pm”"
                 aria-label="New task for this day"
               />
             </form>

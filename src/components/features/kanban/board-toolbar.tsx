@@ -25,14 +25,14 @@ export function BoardToolbar({ filters, labels, onChange }: Props) {
         type="search"
         value={filters.query}
         onChange={(e) => onChange({ query: e.target.value })}
-        placeholder="filter cards"
+        placeholder="Filter cards"
         maxLength={120}
         aria-label="Filter by text"
         className="w-full sm:w-56"
       />
       <StepSlider
         layout="inline"
-        label="priority"
+        label="Priority"
         value={filters.minPriority}
         steps={PRIORITY_STEPS_AT_LEAST}
         onChange={(minPriority) => onChange({ minPriority })}
@@ -54,10 +54,10 @@ export function BoardToolbar({ filters, labels, onChange }: Props) {
       {active ? (
         <button
           type="button"
-          className="text-xs text-muted underline decoration-dotted underline-offset-4 hover:text-fg"
+          className="text-sm text-muted underline decoration-subtle underline-offset-4 hover:text-fg hover:decoration-current"
           onClick={() => onChange({ query: "", minPriority: "none", label: null })}
         >
-          clear filters
+          Clear filters
         </button>
       ) : null}
     </div>
