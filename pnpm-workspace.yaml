@@ -3,6 +3,7 @@ allowBuilds:
   sharp: true
   esbuild: true
   unrs-resolver: true
+  workerd: true
 
 # Security: force patched transitive versions (GHSA-73wf-gq98-2v4g).
 overrides:
