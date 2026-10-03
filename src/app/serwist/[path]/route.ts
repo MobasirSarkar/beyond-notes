@@ -6,6 +6,7 @@ export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =
   {
     additionalPrecacheEntries: [{ url: "/~offline", revision }],
     swSrc: "src/app/sw.ts",
-    useNativeEsbuild: true,
+    // ponytail: use WASM esbuild because Cloudflare Workers isolates cannot run native binaries.
+    useNativeEsbuild: false,
   },
 );
