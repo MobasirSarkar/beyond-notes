@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
@@ -7,7 +8,7 @@ export default defineConfig({
     tsconfigPaths: true,
     alias: {
       // `server-only` throws outside the React Server bundle; it's a no-op in tests.
-      "server-only": new URL("./tests/stubs/server-only.ts", import.meta.url).pathname,
+      "server-only": fileURLToPath(new URL("./tests/stubs/server-only.ts", import.meta.url)),
     },
   },
   test: {

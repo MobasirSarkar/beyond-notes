@@ -25,11 +25,16 @@ const signUpSchema = signInSchema.extend({
     .regex(/\d|[^a-z0-9]/i, "Include a number or symbol."),
 });
 
-type Props = { mode: "sign-in" | "sign-up"; next: string; github: boolean };
+type Props = {
+  mode: "sign-in" | "sign-up";
+  next: string;
+  github: boolean;
+  initialError?: string | undefined;
+};
 
-export function AuthForm({ mode, next, github }: Props) {
+export function AuthForm({ mode, next, github, initialError }: Props) {
   const ids = useId();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
   const [pending, startTransition] = useTransition();
   const isSignUp = mode === "sign-up";
 
@@ -65,6 +70,17 @@ export function AuthForm({ mode, next, github }: Props) {
       }
       // Full navigation so the new session cookie drives a fresh server render.
       window.location.assign(next);
+    });
+  }
+
+  function onSocialSignIn() {
+    setError(null);
+    startTransition(async () => {
+      try {
+        await signIn.social({ provider: "github", callbackURL: next });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "GitHub authentication failed.");
+      }
     });
   }
 
@@ -128,13 +144,22 @@ export function AuthForm({ mode, next, github }: Props) {
         </Button>
 
         {github ? (
-          <Button
-            size="lg"
-            disabled={pending}
-            onClick={() => void signIn.social({ provider: "github", callbackURL: next })}
-          >
-            Continue with GitHub
-          </Button>
+          <>
+            <div className="flex items-center gap-3" role="separator">
+              <span aria-hidden className="flex-1 rule-t" />
+              <span className="text-xs uppercase tracking-wider text-muted">or</span>
+              <span aria-hidden className="flex-1 rule-t" />
+            </div>
+            <Button
+              type="button"
+              size="lg"
+              disabled={pending}
+              onClick={onSocialSignIn}
+            >
+              {pending ? <Spinner label="Redirecting to GitHub" /> : null}
+              Continue with GitHub
+            </Button>
+          </>
         ) : null}
       </form>
       <footer className="px-6 py-4 text-center text-sm text-muted rule-t sm:px-8">

@@ -41,6 +41,12 @@ export const auth = betterAuth({
     revokeSessionsOnPasswordReset: true,
   },
   socialProviders,
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["github"],
+    },
+  },
   session: {
     expiresIn: 14 * DAY,
     updateAge: DAY,

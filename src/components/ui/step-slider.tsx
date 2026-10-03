@@ -104,7 +104,7 @@ export function StepSlider<T extends string>({
       onPointerCancel={() => setDragging(false)}
       onKeyDown={onKeyDown}
       className={cn(
-        "group relative h-8 cursor-pointer touch-none rounded-full bg-surface-2/80 shadow-[inset_0_var(--bw)_0.25rem_var(--shadow-color)] select-none focus-visible:outline-none",
+        "group relative h-6 cursor-pointer touch-none rounded-full bg-surface-2/80 shadow-[inset_0_var(--bw)_0.25rem_var(--shadow-color)] select-none focus-visible:outline-none",
         layout === "inline" && "min-w-40 flex-1",
       )}
     >

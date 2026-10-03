@@ -30,3 +30,7 @@ test-results/
 
 # bundled scripts (Docker migrator)
 dist/
+
+.omp/
+.cursor/
+.claude/
