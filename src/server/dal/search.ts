@@ -47,7 +47,7 @@ export async function searchEverything(userId: string, q: string): Promise<Searc
     order by rank desc limit 20
   `);
 
-  return rows.map((r) => ({
+  return rows.rows.map((r) => ({
     kind: r.kind,
     id: r.id,
     title: r.title,

@@ -137,12 +137,12 @@ export async function getFocusStats(userId: string, tz: string): Promise<FocusSt
       .where(and(eq(note.userId, userId), isNull(note.archivedAt))),
   ]);
 
-  const dailyArr = [...daily];
+  const dailyArr = [...daily.rows];
   const streaks = computeStreaks(dailyArr.map((d) => d.seconds > 0));
 
   return {
     daily: dailyArr,
-    weekly: [...weekly],
+    weekly: [...weekly.rows],
     topTasks,
     totals: {
       focusSeconds: totalsRow[0]?.focusSeconds ?? 0,

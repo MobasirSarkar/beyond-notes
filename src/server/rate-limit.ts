@@ -23,6 +23,6 @@ export async function consumeRateLimit(
       last_request = case when rate_limit.last_request < ${windowStart} then ${now} else rate_limit.last_request end
     returning count
   `);
-  const count = rows[0]?.count ?? 0;
+  const count = rows.rows[0]?.count ?? 0;
   return count <= max;
 }

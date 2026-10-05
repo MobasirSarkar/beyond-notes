@@ -1,27 +1,30 @@
 import "server-only";
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
 
 import { env } from "@/env";
 
 import * as schema from "./schema";
 
+declare global {
+  var __bnPgPool: Pool | undefined;
+}
+
 /**
- * A single pooled client per server instance (reused across hot reloads in dev).
- * `prepare: false` keeps it compatible with PgBouncer/Neon pooled endpoints.
+ * A pooled WebSocket client per server instance (reused across hot reloads in dev).
+ * Compatible with Cloudflare Workers (workerd), Node.js, and Neon serverless.
  */
-const client =
-  globalThis.__bnPgClient ??
-  postgres(env.DATABASE_URL, {
-    prepare: false,
+const pool =
+  globalThis.__bnPgPool ??
+  new Pool({
+    connectionString: env.DATABASE_URL,
     max: env.NODE_ENV === "production" ? 10 : 5,
-    idle_timeout: 20,
-    connect_timeout: 15,
   });
 
-if (env.NODE_ENV !== "production") globalThis.__bnPgClient = client;
+if (env.NODE_ENV !== "production") globalThis.__bnPgPool = pool;
 
-export const db = drizzle(client, { schema, casing: "snake_case" });
+export const db = drizzle(pool, { schema, casing: "snake_case" });
+
 export type Db = typeof db;
 export type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];

@@ -72,7 +72,7 @@ export async function listNoteTags(userId: string): Promise<{ tag: string; count
     where ${note.userId} = ${userId} and ${note.archivedAt} is null
     group by t.tag order by count desc, t.tag asc limit 100
   `);
-  return [...rows];
+  return [...rows.rows];
 }
 
 export async function getNote(userId: string, noteId: string): Promise<NoteDto | null> {
