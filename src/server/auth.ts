@@ -21,7 +21,12 @@ export const auth = betterAuth({
   appName: "Beyond Notes",
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: [env.BETTER_AUTH_URL],
+  trustedOrigins: [
+    env.BETTER_AUTH_URL,
+    ...(env.BETTER_AUTH_URL !== "https://beyond-notes.sarkar-mobasir.workers.dev"
+      ? ["https://beyond-notes.sarkar-mobasir.workers.dev"]
+      : []),
+  ],
   telemetry: { enabled: false },
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -73,7 +78,11 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (created) => {
-          await seedWorkspace(created.id);
+          try {
+            await seedWorkspace(created.id);
+          } catch (err) {
+            console.error("Failed to seed workspace for new user:", err);
+          }
         },
       },
     },
