@@ -11,7 +11,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
     DATABASE_URL: z.url().refine((u) => u.startsWith("postgres"), "Must be a Postgres URL"),
     BETTER_AUTH_SECRET: z.string().min(32, "Use at least 32 random characters"),
-    BETTER_AUTH_URL: z.url(),
+    BETTER_AUTH_URL: z.url().default("https://beyond-notes.sarkar-mobasir.workers.dev"),
     GITHUB_CLIENT_ID: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
     VAPID_PRIVATE_KEY: z.string().min(1).optional(),
