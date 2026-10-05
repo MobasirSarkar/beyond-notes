@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { defaultCache } from "@serwist/turbopack/worker";
+import { defaultCache } from "@serwist/next/worker";
 import { NetworkOnly, Serwist, type PrecacheEntry, type SerwistGlobalConfig } from "serwist";
 
 import type { PushPayload } from "@/types/api";

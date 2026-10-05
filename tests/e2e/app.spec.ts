@@ -52,7 +52,7 @@ test("exposes an installable manifest", async ({ request }) => {
   expect(manifest.name).toBe("Beyond");
   expect(manifest.start_url).toBe("/boards");
   expect(manifest.icons.length).toBeGreaterThanOrEqual(3);
-  expect((await request.get("/serwist/sw.js")).ok()).toBe(true);
+  expect((await request.get("/sw.js")).ok()).toBe(true);
 });
 
 test.describe("signed-in flows", () => {

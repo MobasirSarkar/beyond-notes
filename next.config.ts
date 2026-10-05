@@ -1,4 +1,4 @@
-import { withSerwist } from "@serwist/turbopack";
+import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
 
 /**
@@ -40,5 +40,13 @@ const nextConfig: NextConfig = {
     ];
   },
 };
+const revision = process.env["VERCEL_GIT_COMMIT_SHA"] ?? crypto.randomUUID();
+
+const withSerwist = withSerwistInit({
+  swSrc: "src/app/sw.ts",
+  swDest: "public/sw.js",
+  disable: process.env.NODE_ENV !== "production" || Boolean(process.env["TURBOPACK"]),
+  additionalPrecacheEntries: [{ url: "/~offline", revision }],
+});
 
 export default withSerwist(nextConfig);

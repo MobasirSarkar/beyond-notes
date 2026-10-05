@@ -1,6 +1,6 @@
 "use client";
 
-import { SerwistProvider } from "@serwist/turbopack/react";
+import { SerwistProvider } from "@serwist/next/react";
 import { MotionConfig } from "motion/react";
 import { useEffect, type ReactNode } from "react";
 
@@ -13,7 +13,7 @@ export function RootProviders({ children }: { children: ReactNode }) {
   useEffect(() => hydratePrefs(), []);
 
   return (
-    <SerwistProvider swUrl="/serwist/sw.js" disable={process.env.NODE_ENV === "development"}>
+    <SerwistProvider swUrl="/sw.js" disable={process.env.NODE_ENV !== "production"}>
       <MotionConfig reducedMotion={reduced ? "always" : "never"}>
         {children}
         <Toaster />
